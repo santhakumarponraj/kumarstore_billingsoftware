@@ -9,6 +9,14 @@ def Purchase_Master_FN():
     ui = Prc_MtrUI
 
     tbl = ui.PurchaseTable
+
+    _cached_prod_barcode_list = None
+
+    def get_prod_barcode_list(refresh=False):
+        nonlocal _cached_prod_barcode_list
+        if _cached_prod_barcode_list is None or refresh:
+            _cached_prod_barcode_list = ProductBarCodeList()
+        return _cached_prod_barcode_list
     @Exception_Handle
     def Generate_Table_Entry():
         # print(tbl.currentColumn())
@@ -39,7 +47,7 @@ def Purchase_Master_FN():
             CB.setEditable(True)
 
             CB.addItem("","")
-            for name,barcode in ProductBarCodeList():
+            for name,barcode in get_prod_barcode_list():
                 CB.addItem(name,barcode)
             Dynamic_Filter_ComboBox(CB)
             CB.lineEdit().returnPressed.connect(Update_BarcodeText)
@@ -56,7 +64,7 @@ def Purchase_Master_FN():
             CB = QComboBox()
             CB.setEditable(True)
             CB.addItem("","")
-            for name,barcode in ProductBarCodeList():
+            for name,barcode in get_prod_barcode_list():
                 CB.addItem(name,barcode)
             Dynamic_Filter_ComboBox(CB)
             CB.lineEdit().returnPressed.connect(Update_BarcodeText)
@@ -167,6 +175,7 @@ def Purchase_Master_FN():
 
     @Exception_Handle
     def Clear_Table():
+        get_prod_barcode_list(refresh=True)
         tbl.setRowCount(0)
         Generate_Table_Entry()
         ui.OQLE_NetProdCount.setText("0")
@@ -229,6 +238,7 @@ def Purchase_Master_FN():
                 }
                 DB_Push_Dict(purcDict, 'purchase_info', False)
 
+            get_prod_barcode_list(refresh=True)
             show_info_msg("Purchased Stock", "Purchase Stock updated Successfully")
 
         else:
