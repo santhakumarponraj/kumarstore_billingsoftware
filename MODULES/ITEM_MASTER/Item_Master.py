@@ -613,10 +613,7 @@ def Item_Master_FN():
 
     ui.OQTB_Product.clicked.connect(lambda: On_Clicked_Product_ViewTbl())
 
-    prod_filter_timer = QtCore.QTimer()
-    prod_filter_timer.setSingleShot(True)
-    prod_filter_timer.timeout.connect(Filter_Product_ViewTbl)
-    ui.OQLE_ProductFilter.textChanged.connect(lambda: prod_filter_timer.start(150))
+    ui.OQLE_ProductFilter.textChanged.connect(lambda :Filter_Product_ViewTbl())
 
     ui.IQCB_Add.stateChanged.connect(lambda: Enable_Add_Product())
 

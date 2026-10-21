@@ -59,11 +59,16 @@ class KeyFilter(QObject):
     @Exception_Handle
     def eventFilter(self, obj, event):
         if event.type() == QEvent.KeyPress:
+            # print("Key pressed:", event.text(), "Code:", event.key())
             focused = QApplication.focusWidget()
-            is_bill_table_child = focused is not None and (
-                focused == Inv_MtrUI.IQTB_BillList or Inv_MtrUI.IQTB_BillList.isAncestorOf(focused)
-            )
-            if (is_bill_table_child
+            chain = []
+            w = focused
+            while w is not None:
+                name = w.objectName() if w.objectName() else w.__class__.__name__
+                # chain.append(name)
+                chain.append(w)
+                w = w.parentWidget()
+            if (Inv_MtrUI.IQTB_BillList in chain
                 and (Inv_MtrUI.IQTB_BillList.currentColumn() == 0)
                 and (event.key() == Qt.Key_Up or event.key() == Qt.Key_Down) and
                 Inv_MtrUI.IQTB_BillList.state() == Inv_MtrUI.IQTB_BillList.EditingState
@@ -71,10 +76,15 @@ class KeyFilter(QObject):
                 Inv_MtrUI.IQTB_BillList.blockSignals(True)
                 Inv_MtrUI.IQTB_ProductList.setFocus(True)
                 Inv_MtrUI.IQTB_BillList.blockSignals(False)
+
                 return False
+
+
+
 
             if (
                 obj == Prc_MtrUI.PurchaseTable
+                and event.type() == QEvent.KeyPress
                 and (event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter)
                 and Prc_MtrUI.PurchaseTable.currentColumn() < 7
             ):
@@ -82,6 +92,7 @@ class KeyFilter(QObject):
                 Prc_MtrUI.PurchaseTable.setCurrentCell(index.row(), index.column() + 1)
                 Prc_MtrUI.PurchaseTable.edit(Prc_MtrUI.PurchaseTable.currentIndex())
                 Prc_MtrUI.PurchaseTable.activated.emit(index)
+                
                 return True
 
         return super().eventFilter(obj, event)
@@ -115,66 +126,56 @@ Fetch_CustomerNo = lambda : DB_Fetch(""" select distinct phone_no from customer_
 paymMode =['Cash','UPI','Card']
 saleManlst = ['A','B','C']
 
-TABLE_FOCUS_STYLE = r'''
-/* Table container (both Widget & View) */
-QTableWidget, QTableView {
-    border: 2px solid #002B5B;
-    border-radius: 5px;
-}
-
-/* Selected items (active) */
-QTableWidget::item:selected,
-QTableView::item:selected {
-    color: black;
-    background-color: #a9c7f5;
-}
-
-/* Selected items (inactive / focus lost) */
-QTableWidget::item:selected:!active,
-QTableView::item:selected:!active {
-    color: black;
-    background-color: #a9c7f5;
-}
-'''
-DEFAULT_FOCUS_STYLE = "border: 2px solid #002B5B ;  border-radius: 5px;"
-DEFAULT_SPINBOX_STYLE = '''
-QSpinBox {
-background-color: #f0f8ff;
-border: 2px solid #0078d7;
-border-radius: 6px;
-padding: 2px 20px 2px 8px;
-color: #003366;
-font-size: 30px;
-}
-'''
-
 class FocusHighlighter(QObject):
     @Exception_Handle
     def eventFilter(self, obj, event):
         if event.type() == QEvent.FocusIn:
-            focus_w = QApplication.focusWidget()
-            if focus_w and "IQTB" in focus_w.objectName():
-                if obj.styleSheet() != TABLE_FOCUS_STYLE:
-                    obj.setStyleSheet(TABLE_FOCUS_STYLE)
+            if "IQTB"  in QApplication.focusWidget().objectName():
+                obj.setStyleSheet(r'''
+                /* Table container (both Widget & View) */
+                QTableWidget, QTableView {
+                    border: 2px solid #002B5B;
+                    border-radius: 5px;
+                }
+
+                /* Selected items (active) */
+                QTableWidget::item:selected,
+                QTableView::item:selected {
+                    color: black;
+                    background-color: #a9c7f5;
+                }
+
+                /* Selected items (inactive / focus lost) */
+                QTableWidget::item:selected:!active,
+                QTableView::item:selected:!active {
+                    color: black;
+                    background-color: #a9c7f5;
+                }
+                ''')
+
             else:
-                if obj.styleSheet() != DEFAULT_FOCUS_STYLE:
-                    obj.setStyleSheet(DEFAULT_FOCUS_STYLE)
+
+                obj.setStyleSheet("border: 2px solid #002B5B ;  border-radius: 5px;")
+            
 
         elif event.type() == QEvent.FocusOut:
-            focus_w = QApplication.focusWidget()
-            if focus_w and "IQTB" not in focus_w.objectName():
-                if obj.styleSheet() != DEFAULT_SPINBOX_STYLE:
-                    obj.setStyleSheet(DEFAULT_SPINBOX_STYLE)
-
-        if event.type() == QEvent.KeyPress and event.key() in (Qt.Key_Return, Qt.Key_Enter):
-            focus_w = QApplication.focusWidget()
-            if focus_w and "QPB" in focus_w.objectName():
-                try:
-                    obj.click()
-                except Exception:
-                    pass
-                return True
-
+            if QApplication.focusWidget() and "IQTB" not in QApplication.focusWidget().objectName():
+                obj.setStyleSheet( '''
+                    QSpinBox {
+                    background-color: #f0f8ff;
+                    border: 2px solid #0078d7;
+                    border-radius: 6px;
+                    padding: 2px 20px 2px 8px;
+                    color: #003366;
+                    font-size: 30px;
+                    }
+                    ''') # Reset to default
+                
+        if event.type() == QEvent.KeyPress and event.key() in (Qt.Key_Return, Qt.Key_Enter) and "QPB" in QApplication.focusWidget().objectName():
+            try:obj.click()  # simulate button click
+            except:pass
+            return True  # stop further processing
+        
         return False
 
 highlighter = FocusHighlighter()

@@ -25,19 +25,6 @@ dbv = 'Primary'
 dbc,db = DB_Connect(ConfigData[dbv])
 
 
-def Ensure_DB_Connected():
-    global dbc, db
-    try:
-        if db is None or not db.is_connected():
-            db.ping(reconnect=True, attempts=3, delay=1)
-            dbc = db.cursor()
-    except Exception:
-        try:
-            dbc, db = DB_Connect(ConfigData[dbv])
-        except Exception:
-            pass
-
-
 dbod = QSqlDatabase.addDatabase("QODBC")
 # SQLODC_Name = "Driver={MySQL ODBC 9.4 ANSI Driver};"
 dbod.setDatabaseName("Driver={MySQL ODBC 9.4 UNICODE Driver};" + fr"Server={ConfigData[dbv]['db_host']};Database={ConfigData[dbv]['database']};User={ConfigData[dbv]['db_user']};Password={ConfigData[dbv]['db_pass']};")
@@ -118,14 +105,12 @@ def Adjust_ViewTbl_ColName(tbl,lst):
 
 @Exception_Handle
 def DB_Exe(sql,prnt):
-    Ensure_DB_Connected()
     if prnt == True:
         print(sql)
     dbc.execute(sql)
 
 @Exception_Handle
 def DB_Cmt(sql,prnt):
-    Ensure_DB_Connected()
     if prnt == True:
         print(sql)
     dbc.execute(sql)
@@ -144,14 +129,13 @@ def DB_Cmt_WOE(sql,prnt):
 
 @Exception_Handle
 def DB_Fetch(sql,prnt,type):
-    Ensure_DB_Connected()
     global dbc, db
 
     if prnt == True:
         print(sql)
     dbc.execute(sql)
     if type == "LOE":
-        return [val for row in dbc.fetchall() for val in row]
+        return list(sum(dbc.fetchall(),()))
     if type == "LOL":
         return [list(x) for x in dbc.fetchall()]
     if type == "DIC":
@@ -160,7 +144,7 @@ def DB_Fetch(sql,prnt,type):
         except: return None
 
     if type == "DOC":
-        data = [val for row in dbc.fetchall() for val in row]
+        data = list(sum(dbc.fetchall(),()))
         column= dbc.column_names
         try:
             return {key:value for key,value in zip(column,data)}
@@ -198,7 +182,6 @@ def DB_TBL_Fetch(tbl,indexlist,active):
 
 @Exception_Handle
 def DB_Push_Dict(dict,tbl_nm,prnt):
-    Ensure_DB_Connected()
 
     # if len(dict) != 1:
     columns = ', '.join(dict.keys())
