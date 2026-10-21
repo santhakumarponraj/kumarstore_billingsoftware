@@ -904,7 +904,7 @@ def Invoice_Master_FN():
 
             else:  # Editing existing invoice
                 inv_number = ui.IQSB_InvNo.value()
-                print(f"[EDIT] Starting edit for invoice: {inv_number}")
+                # print(f"[EDIT] Starting edit for invoice: {inv_number}")
 
                 # ── STEP 1: Fetch all existing items from DB ──────────────────────
                 # DOL = Dict of Lists → key is uid, values are remaining columns
@@ -914,7 +914,7 @@ def Invoice_Master_FN():
                     fr"SELECT uid, product_id, qty, purchase_uid FROM invoice_item_info WHERE invoice_no = '{inv_number}'",
                     False, "DOL"
                 )
-                print(f"[EDIT] Existing items fetched: {existing_items}")
+                # print(f"[EDIT] Existing items fetched: {existing_items}")
 
                 # ── STEP 2: Reverse all stock for every existing item ─────────────
                 for item_db_uid, item_vals in existing_items.items():
@@ -1016,7 +1016,7 @@ def Invoice_Master_FN():
                             amt_received = '{amt_recv}'
                         WHERE inv_no = '{inv_number}' and fy = '{FY_Gen(Cur_Date)}' """)
                     db.commit()
-                    print(f"[UPDATE] invoice_master updated for inv_no={inv_number}")
+                    # print(f"[UPDATE] invoice_master updated for inv_no={inv_number}")
                 except Exception as e:
                     print(f"[ERROR] Updating invoice_master: {e}")
                     db.rollback()
@@ -1026,7 +1026,7 @@ def Invoice_Master_FN():
                 if ['', '', '', '', '', '', ''] in cur_table_data:
                     cur_table_data.remove(['', '', '', '', '', '', ''])
 
-                print(f"[REAPPLY] Re-applying {len(cur_table_data)} rows from UI table")
+                # print(f"[REAPPLY] Re-applying {len(cur_table_data)} rows from UI table")
 
                 for data in cur_table_data:
                     if data[0] == '' or data[-2] == '':
@@ -1199,7 +1199,7 @@ def Invoice_Master_FN():
                         print(f"  [ERROR] Inserting invoice_item_info for product_id={product_id}: {e}")
                         continue
 
-                print(f"[DONE] Edit complete for invoice_no={inv_number}")
+                # print(f"[DONE] Edit complete for invoice_no={inv_number}")
 
             ui.IQCB_PhoneNumber.setEnabled(False)
             ui.IQPB_Clear.setFocus(True)
@@ -1568,7 +1568,6 @@ def Invoice_Master_FN():
         Adjust_Table_Width(ui.IQTB_ProductList, [0, 0, 25, 10, 10, 0, 0]) \
             if ui.IQCB_UserLang.currentText() == "Tamil" else \
                 Adjust_Table_Width(ui.IQTB_ProductList, [0, 25, 0, 10, 10, 0, 0]))
-
 
 
 if __name__ == "__main__":
