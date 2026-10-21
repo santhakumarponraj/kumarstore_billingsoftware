@@ -1,0 +1,10 @@
+PyQt5
+mysql-connector-python
+openpyxl
+pandas
+num2words
+cryptography
+wcwidth
+pywin32
+escpos
+"setuptools<82"
