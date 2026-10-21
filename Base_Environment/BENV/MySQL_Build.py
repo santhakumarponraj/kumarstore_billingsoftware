@@ -142,7 +142,6 @@ def DB_Fetch(sql,prnt,type):
         try:
             return {key: value for key, value in [list(x) for x in dbc.fetchall()]}
         except: return None
-
     if type == "DOC":
         data = list(sum(dbc.fetchall(),()))
         column= dbc.column_names
@@ -152,7 +151,6 @@ def DB_Fetch(sql,prnt,type):
             return None
     if type == "DOL":
         return {x[0] : list(x[1:]) for x in dbc.fetchall()}
-
     if type == "DOD":
         columns = [desc[0] for desc in dbc.description]
         dictData = dict()

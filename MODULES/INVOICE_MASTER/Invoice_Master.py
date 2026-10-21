@@ -30,10 +30,12 @@ def Invoice_Master_FN():
 
     global costPriceDict
     costPriceDict = getUIDndCP()
+    
+    # add purchase price to the bill table for profit/loss calculation
+    
 
     global CustomerMobNo
     CustomerMobNo = Fetch_CustomerNo()
-
 
     @Exception_Handle
     def TimeUpdate():
@@ -134,7 +136,6 @@ def Invoice_Master_FN():
 
     @Exception_Handle
     def BilTblFilter(row, column, text):
-        # print("BilTblFilter")
         if column == 0:
             Update_PrdTbl(text)
             row, col = -1, 0
@@ -170,7 +171,7 @@ def Invoice_Master_FN():
     def Add_Item(index):
         # print("====Add Item===")
         global costPriceDict, costIndex
-
+        
         data = get_row_values(PrdTbl, index.row())
         row = BilTbl.currentRow()
 
@@ -204,6 +205,8 @@ def Invoice_Master_FN():
         BilTbl.setCurrentCell(row, 1)
         BilTbl.blockSignals(False)
         PrdTbl.selectionModel().clearSelection()
+
+        getCpforItem(row)
 
     @Exception_Handle
     def BillTbl_functionality(*args):
@@ -291,12 +294,15 @@ def Invoice_Master_FN():
 
         if col == 0 and BilTbl.hasFocus():
             BilTbl.setCurrentCell(BilTbl.currentRow(), BilTbl.currentColumn() + 1)
-            ui.IQLE_CostPrice.setText("Cost Price :    ")
+
+            # ui.IQLE_CostPrice.setText("Cost Price :  000  ")
+            getCpforItem(row)
 
             try:
                 frzItem = BilTbl.item(BilTbl.currentRow(), 0)
                 if frzItem is None or frzItem.text().strip() == "":
                     BilTbl.setCurrentCell(BilTbl.currentRow(), 0)
+            
             except Exception as e:
                 print(e, "Enter")
                 BilTbl.setCurrentCell(BilTbl.currentRow(), 0)
@@ -344,6 +350,7 @@ def Invoice_Master_FN():
         SQL_Product = fr''' SELECT product_id as ID, product_name as name, tamil_name as Tamil, uom as UOM, 
         {price} as Price,GST,cost_price FROM product_info WHERE active_status = "Y" 
         and (Product_name like "{filter}%" or barcode = "{filter}") order by Product_Name '''
+
         PrdTbl_PushData('Product_Model', PrdTbl, SQL_Product)
 
     @Exception_Handle
@@ -992,6 +999,7 @@ def Invoice_Master_FN():
                     dbc.execute(fr"DELETE FROM invoice_item_info WHERE invoice_no = '{inv_number}'")
                     db.commit()
                     print(f"[DELETE] Cleared invoice_item_info for invoice_no={inv_number}")
+                
                 except Exception as e:
                     print(f"[ERROR] Deleting invoice_item_info: {e}")
                     db.rollback()
@@ -1315,9 +1323,7 @@ def Invoice_Master_FN():
 
         Clear_SpecificData()
 
-        # print(FY_Gen)
 
-        
         if BillEdit:
 
             inv_data = DB_Fetch(fr"""select gdate, mob_no, sales_man, pay_mode, discount, amt_payabe, 
@@ -1420,17 +1426,21 @@ def Invoice_Master_FN():
     @Exception_Handle
     def Delete_Invoice():
 
-        if get_info_msg("Delete Invoice", "Please confirm to delete the invoice"):
-            invoiceNumber = ui.IQSB_InvNo.value()
+        invoiceNumber = ui.IQSB_InvNo.value()
+
+        if get_info_msg(fr"Delete Invoice No : {invoiceNumber}", fr"Please confirm to delete the invoice Number : {invoiceNumber}"):
+            
 
             itemInfoData = DB_Fetch(
-                fr"select product_id,uid,purchase_uid from invoice_item_info where invoice_no = '{invoiceNumber}' and active_status = 'Y'",
-                False, "DOL")
+                fr"""select uid,product_id,purchase_uid from invoice_item_info where invoice_no = '{invoiceNumber}' 
+                and active_status = 'Y' and fy = '{FY_Gen(Cur_Date)}'""",False, "DOL")
+
+            # print(itemInfoData)
 
             for dkey, dvalue in itemInfoData.items():
-              # print(dkey, dvalue, "item")
-                productId = dkey
-                productitemId = dvalue[0]
+                # print(dkey, dvalue, "item")
+                productId = dvalue[0]
+                productitemId = dkey
                 productQty = json.loads(dvalue[1])
 
                 sql = fr"update invoice_item_info set active_status = 'N' where uid = '{productitemId}'"
@@ -1438,10 +1448,10 @@ def Invoice_Master_FN():
                 db.commit()
 
                 for prodkey, prodvalue in json.loads(dvalue[1]).items():
-                  # print(prodkey, prodvalue, "individual")
 
-                    prodData = DB_Fetch(
-                        fr"select purchase_qty,avail_qty,remark from purchase_info where uid = {prodkey}", False, "LOE")
+                    prodData = DB_Fetch(fr"""select purchase_qty,avail_qty,remark from purchase_info 
+                    where uid = {prodkey}""", False, "LOE")
+                    
                     purQTY = prodData[0]
                     availStock = prodData[1]
                     remarkData = prodData[2]
@@ -1469,8 +1479,8 @@ def Invoice_Master_FN():
                         dbc.execute(productsql)
                         db.commit()
 
-            sql = fr"""update invoice_master set active_status = 'N' where 
-            inv_no = '{invoiceNumber}' and fy = '{FY_Gen(Cur_Date)}' """
+            sql = fr"""update invoice_master set active_status = 'N' 
+            where inv_no = '{invoiceNumber}' and fy = '{FY_Gen(Cur_Date)}' """
             dbc.execute(sql)
             db.commit()
             ui.IQSB_InvNo.setStyleSheet("QSpinBox { background-color: lightcoral; }")
