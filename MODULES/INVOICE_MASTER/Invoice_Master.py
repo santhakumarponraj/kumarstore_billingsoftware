@@ -136,14 +136,30 @@ def Invoice_Master_FN():
 
         sync_system_time()
 
-    @Exception_Handle
-    def BilTblFilter(row, column, text):
-        # print("BilTblFilter")
+    _bil_filter_timer = QtCore.QTimer()
+    _bil_filter_timer.setSingleShot(True)
+
+    def _execute_bil_filter(row, column, text):
         if column == 0:
             Update_PrdTbl(text)
             row, col = -1, 0
-            index = models['Product_Model'].index(row, col)
-            PrdTbl.setCurrentIndex(index)
+            if 'Product_Model' in models:
+                index = models['Product_Model'].index(row, col)
+                PrdTbl.setCurrentIndex(index)
+
+    @Exception_Handle
+    def BilTblFilter(row, column, text):
+        if column == 0:
+            _bil_filter_timer.stop()
+            try:
+                _bil_filter_timer.timeout.disconnect()
+            except Exception:
+                pass
+            if text == "":
+                _execute_bil_filter(row, column, text)
+            else:
+                _bil_filter_timer.timeout.connect(lambda: _execute_bil_filter(row, column, text))
+                _bil_filter_timer.start(120)
 
     @Exception_Handle
     def setup_table_with_text_changes(table):
