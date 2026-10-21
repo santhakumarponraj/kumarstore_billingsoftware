@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1020</width>
+    <height>671</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">QTabWidget::pane {
+    border: 1px solid #A7C7E7;
+    border-radius: 5px;
+    background: #F7FBFF;
+    padding: 8px;
+}
+
+QTabBar::tab {
+    background: #E3F2FD;
+    color: #0D47A1;
+    border: 1px solid #A7C7E7;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 0px 5px;      /* ⬅️ more padding */
+    min-width: 120px;        /* ⬅️ ensures text fits */
+    min-height: 15px;        /* ⬅️ gives height for Bookman font */
+    font-family: &quot;Bookman Old Style&quot;;
+    font-size: 10pt;
+    font-weight: 600;
+    margin-left: 3px;
+    transition: all 0.3s ease;
+}
+
+QTabBar::tab:hover {
+    background: #BBDEFB;
+    color: #0B3C8A;
+}
+
+QTabBar::tab:selected {
+    background: #90CAF9;
+    color: #0A357A;
+    font-weight: bold;
+    border-color: #7EB7E3;
+}
+
+QTabBar::tab:!selected {
+    margin-top: 2px;
+}
+
+QTabWidget::tab-bar {
+    alignment: left;
+}
+
+QWidget {
+    background-color: #F7FBFF;
+    font-family: &quot;Bookman Old Style&quot;;
+    font-size: 11pt;
+}
+</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>5</number>
+       </property>
+       <property name="rightMargin">
+        <number>5</number>
+       </property>
+       <property name="bottomMargin">
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QTabWidget" name="Base_Tab">
+         <property name="focusPolicy">
+          <enum>Qt::WheelFocus</enum>
+         </property>
+         <property name="tabPosition">
+          <enum>QTabWidget::North</enum>
+         </property>
+         <property name="tabShape">
+          <enum>QTabWidget::Rounded</enum>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <property name="usesScrollButtons">
+          <bool>true</bool>
+         </property>
+         <property name="tabBarAutoHide">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="Invoice">
+          <attribute name="title">
+           <string>Invoice</string>
+          </attribute>
+         </widget>
+         <widget class="QWidget" name="Product">
+          <attribute name="title">
+           <string>Product</string>
+          </attribute>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

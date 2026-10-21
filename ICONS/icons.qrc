@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="Source_icon">
+     <file>search.svg</file>
+     <file>menu.svg</file>
+     <file>chevrons-down.svg</file>
+  </qresource>
+</RCC>

@@ -1,0 +1,409 @@
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_MainWindow_ItemMaster(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(1243, 945)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout.setObjectName("gridLayout")
+        self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
+        self.scrollArea.setStyleSheet("/* Global font and base style for all widgets */\n"
+"QWidget {\n"
+"font:  9pt \"Bookman Old Style\";\n"
+"\n"
+"    color: #1a1a1a;\n"
+"    background-color: #e6f2ff; /* very light blue background */\n"
+"}\n"
+"\n"
+"/* QPushButton */\n"
+"QPushButton {\n"
+"    background-color: #4da6ff; /* light blue */\n"
+"    color: black;\n"
+"    border: 1px solid #3399ff;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px 10px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: #3399ff;\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #007acc;\n"
+"}\n"
+"\n"
+"/* QLineEdit */\n"
+"QLineEdit {\n"
+"    border: 1px solid #3399ff;\n"
+"    border-radius: 4px;\n"
+"    padding: 4px;\n"
+"    background-color: #ffffff;\n"
+"    selection-background-color: #99ccff;\n"
+"}\n"
+"\n"
+"/* QTextEdit */\n"
+"QTextEdit {\n"
+"    border: 1px solid #3399ff;\n"
+"    border-radius: 4px;\n"
+"    background-color: #ffffff;\n"
+"    selection-background-color: #99ccff;\n"
+"}\n"
+"\n"
+"/* QLabel */\n"
+"QLabel {\n"
+"    color: #1a1a1a;\n"
+"    font-weight: normal;\n"
+"}\n"
+"\n"
+"/* QComboBox */\n"
+"QComboBox {\n"
+"    border: 1px solid #3399ff;\n"
+"    border-radius: 4px;\n"
+"    padding: 3px;\n"
+"    background-color: #ffffff;\n"
+"}\n"
+"\n"
+"QComboBox::drop-down {\n"
+"    border-left: 1px solid #3399ff;\n"
+"}\n"
+"\n"
+"QComboBox QAbstractItemView {\n"
+"    background-color: #e6f2ff;\n"
+"    selection-background-color: #99ccff;\n"
+"}\n"
+"\n"
+"/* QTableView / QTreeView */\n"
+"QTableView, QTreeView {\n"
+"    gridline-color: #3399ff;\n"
+"    background-color: #ffffff;\n"
+"    alternate-background-color: #f2f9ff;\n"
+"    selection-background-color: #99ccff;\n"
+"}\n"
+"\n"
+"/* QHeaderView for tables */\n"
+"QHeaderView::section {\n"
+"    background-color: #4da6ff;\n"
+"    color: white;\n"
+"    padding: 4px;\n"
+"    border: 1px solid #3399ff;\n"
+"}\n"
+"\n"
+"/* QCheckBox and QRadioButton */\n"
+"QCheckBox, QRadioButton {\n"
+"    spacing: 5px;\n"
+"}\n"
+"\n"
+"QCheckBox::indicator, QRadioButton::indicator {\n"
+"    width: 16px;\n"
+"    height: 16px;\n"
+"}\n"
+"\n"
+"/* QSlider */\n"
+"QSlider::groove:horizontal {\n"
+"    border: 1px solid #3399ff;\n"
+"    height: 6px;\n"
+"    background: #cce6ff;\n"
+"    border-radius: 3px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal {\n"
+"    background: #4da6ff;\n"
+"    border: 1px solid #3399ff;\n"
+"    width: 12px;\n"
+"    margin: -5px 0;\n"
+"    border-radius: 6px;\n"
+"}\n"
+"\n"
+"/* QProgressBar */\n"
+"QProgressBar {\n"
+"    border: 1px solid #3399ff;\n"
+"    border-radius: 5px;\n"
+"    text-align: center;\n"
+"    background-color: #cce6ff;\n"
+"}\n"
+"\n"
+"QProgressBar::chunk {\n"
+"    background-color: #4da6ff;\n"
+"    width: 10px;\n"
+"}\n"
+"\n"
+"QGroupBox::title {\n"
+"    font-weight: bold;\n"
+"    color: #1a1a1a; /* optional: set title color */\n"
+"    subcontrol-origin: margin;\n"
+"    subcontrol-position: top left;\n"
+"    padding: 0 3px;\n"
+"}\n"
+"\n"
+"\n"
+"/* Hover effect for enabled button */\n"
+"QPushButton:hover:!disabled {\n"
+"    background-color: #3399ff;\n"
+"}\n"
+"\n"
+"/* Pressed effect for enabled button */\n"
+"QPushButton:pressed:!disabled {\n"
+"    background-color: #007acc;\n"
+"}\n"
+"\n"
+"/* Disabled button */\n"
+"QPushButton:disabled {\n"
+"    background-color: #d9d9d9; /* light grey */\n"
+"    color: #a6a6a6;           /* grey text */\n"
+"    border: 1px solid #bfbfbf;\n"
+"}\n"
+"\n"
+"\n"
+"/* Drop-down button area */\n"
+"QComboBox::drop-down {\n"
+"    subcontrol-origin: padding;\n"
+"    subcontrol-position: top right;\n"
+"    width: 20px;\n"
+"    border-left: 1px solid #3399ff;\n"
+"    background-color: #4da6ff; /* light blue button */\n"
+"    border-top-right-radius: 4px;\n"
+"    border-bottom-right-radius: 4px;\n"
+"    image:url(/Source_icon/chevrons-down.svg) /* custom arrow icon */\n"
+"}\n"
+"QComboBox::down-arrow {\n"
+"    image: url(:/Source_icon/chevrons-down.svg);\n"
+"    width: 12px;\n"
+"    height: 12px;\n"
+"}")
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName("scrollArea")
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 1241, 923))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.scrollAreaWidgetContents)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.Item_Frame = QtWidgets.QFrame(self.scrollAreaWidgetContents)
+        self.Item_Frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.Item_Frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.Item_Frame.setObjectName("Item_Frame")
+        self.gridLayout_4 = QtWidgets.QGridLayout(self.Item_Frame)
+        self.gridLayout_4.setObjectName("gridLayout_4")
+        self.label_9 = QtWidgets.QLabel(self.Item_Frame)
+        self.label_9.setObjectName("label_9")
+        self.gridLayout_4.addWidget(self.label_9, 6, 0, 1, 1)
+        self.label_3 = QtWidgets.QLabel(self.Item_Frame)
+        self.label_3.setObjectName("label_3")
+        self.gridLayout_4.addWidget(self.label_3, 2, 0, 1, 1)
+        self.label_2 = QtWidgets.QLabel(self.Item_Frame)
+        self.label_2.setObjectName("label_2")
+        self.gridLayout_4.addWidget(self.label_2, 1, 0, 1, 1)
+        self.label_4 = QtWidgets.QLabel(self.Item_Frame)
+        self.label_4.setObjectName("label_4")
+        self.gridLayout_4.addWidget(self.label_4, 3, 0, 1, 1)
+        self.label_11 = QtWidgets.QLabel(self.Item_Frame)
+        self.label_11.setObjectName("label_11")
+        self.gridLayout_4.addWidget(self.label_11, 13, 0, 1, 1)
+        self.label_7 = QtWidgets.QLabel(self.Item_Frame)
+        self.label_7.setObjectName("label_7")
+        self.gridLayout_4.addWidget(self.label_7, 11, 0, 1, 1)
+        self.label_8 = QtWidgets.QLabel(self.Item_Frame)
+        self.label_8.setObjectName("label_8")
+        self.gridLayout_4.addWidget(self.label_8, 12, 0, 1, 1)
+        self.label_10 = QtWidgets.QLabel(self.Item_Frame)
+        self.label_10.setObjectName("label_10")
+        self.gridLayout_4.addWidget(self.label_10, 9, 0, 1, 1)
+        self.IQLE_TamilName = QtWidgets.QLineEdit(self.Item_Frame)
+        self.IQLE_TamilName.setObjectName("IQLE_TamilName")
+        self.gridLayout_4.addWidget(self.IQLE_TamilName, 1, 2, 1, 1)
+        self.label = QtWidgets.QLabel(self.Item_Frame)
+        self.label.setObjectName("label")
+        self.gridLayout_4.addWidget(self.label, 0, 0, 1, 1)
+        self.label_12 = QtWidgets.QLabel(self.Item_Frame)
+        self.label_12.setObjectName("label_12")
+        self.gridLayout_4.addWidget(self.label_12, 10, 0, 1, 1)
+        self.label_15 = QtWidgets.QLabel(self.Item_Frame)
+        self.label_15.setObjectName("label_15")
+        self.gridLayout_4.addWidget(self.label_15, 8, 0, 1, 1)
+        self.IQPB_TamilKeyboard = QtWidgets.QPushButton(self.Item_Frame)
+        self.IQPB_TamilKeyboard.setEnabled(False)
+        self.IQPB_TamilKeyboard.setObjectName("IQPB_TamilKeyboard")
+        self.gridLayout_4.addWidget(self.IQPB_TamilKeyboard, 1, 3, 1, 1)
+        self.IQLE_ProductID = QtWidgets.QLineEdit(self.Item_Frame)
+        self.IQLE_ProductID.setReadOnly(True)
+        self.IQLE_ProductID.setObjectName("IQLE_ProductID")
+        self.gridLayout_4.addWidget(self.IQLE_ProductID, 2, 2, 1, 2)
+        self.IQLE_BarcodeInput = QtWidgets.QLineEdit(self.Item_Frame)
+        self.IQLE_BarcodeInput.setObjectName("IQLE_BarcodeInput")
+        self.gridLayout_4.addWidget(self.IQLE_BarcodeInput, 3, 2, 1, 2)
+        self.IQLE_ProductName = QtWidgets.QLineEdit(self.Item_Frame)
+        self.IQLE_ProductName.setObjectName("IQLE_ProductName")
+        self.gridLayout_4.addWidget(self.IQLE_ProductName, 0, 2, 1, 2)
+        self.IQLE_GST = QtWidgets.QLineEdit(self.Item_Frame)
+        self.IQLE_GST.setObjectName("IQLE_GST")
+        self.gridLayout_4.addWidget(self.IQLE_GST, 6, 2, 1, 2)
+        self.IQLE_HsnCode = QtWidgets.QLineEdit(self.Item_Frame)
+        self.IQLE_HsnCode.setObjectName("IQLE_HsnCode")
+        self.gridLayout_4.addWidget(self.IQLE_HsnCode, 8, 2, 1, 2)
+        self.IQCB_UOM = QtWidgets.QComboBox(self.Item_Frame)
+        self.IQCB_UOM.setObjectName("IQCB_UOM")
+        self.gridLayout_4.addWidget(self.IQCB_UOM, 9, 2, 1, 2)
+        self.IQCB_Active = QtWidgets.QComboBox(self.Item_Frame)
+        self.IQCB_Active.setObjectName("IQCB_Active")
+        self.IQCB_Active.addItem("")
+        self.IQCB_Active.addItem("")
+        self.gridLayout_4.addWidget(self.IQCB_Active, 10, 2, 1, 2)
+        self.IQLE_SalesPrice_R = QtWidgets.QLineEdit(self.Item_Frame)
+        self.IQLE_SalesPrice_R.setObjectName("IQLE_SalesPrice_R")
+        self.gridLayout_4.addWidget(self.IQLE_SalesPrice_R, 11, 2, 1, 2)
+        self.IQLE_SalesPrice_W = QtWidgets.QLineEdit(self.Item_Frame)
+        self.IQLE_SalesPrice_W.setObjectName("IQLE_SalesPrice_W")
+        self.gridLayout_4.addWidget(self.IQLE_SalesPrice_W, 12, 2, 1, 2)
+        self.IQLE_CurrentStock = QtWidgets.QLineEdit(self.Item_Frame)
+        self.IQLE_CurrentStock.setReadOnly(True)
+        self.IQLE_CurrentStock.setObjectName("IQLE_CurrentStock")
+        self.gridLayout_4.addWidget(self.IQLE_CurrentStock, 13, 2, 1, 2)
+        self.IQTB_StockEntry = QtWidgets.QTableView(self.Item_Frame)
+        self.IQTB_StockEntry.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.IQTB_StockEntry.setObjectName("IQTB_StockEntry")
+        self.gridLayout_4.addWidget(self.IQTB_StockEntry, 14, 0, 1, 4)
+        self.frame = QtWidgets.QFrame(self.Item_Frame)
+        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame.setObjectName("frame")
+        self.gridLayout_3 = QtWidgets.QGridLayout(self.frame)
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.label_6 = QtWidgets.QLabel(self.frame)
+        self.label_6.setObjectName("label_6")
+        self.gridLayout_3.addWidget(self.label_6, 0, 0, 1, 1)
+        self.label_5 = QtWidgets.QLabel(self.frame)
+        self.label_5.setObjectName("label_5")
+        self.gridLayout_3.addWidget(self.label_5, 0, 1, 1, 1)
+        self.label_14 = QtWidgets.QLabel(self.frame)
+        self.label_14.setObjectName("label_14")
+        self.gridLayout_3.addWidget(self.label_14, 0, 2, 1, 1)
+        self.IQLE_MRP = QtWidgets.QLineEdit(self.frame)
+        self.IQLE_MRP.setObjectName("IQLE_MRP")
+        self.gridLayout_3.addWidget(self.IQLE_MRP, 1, 0, 1, 1)
+        self.IQLE_PurchaseRate = QtWidgets.QLineEdit(self.frame)
+        self.IQLE_PurchaseRate.setObjectName("IQLE_PurchaseRate")
+        self.gridLayout_3.addWidget(self.IQLE_PurchaseRate, 1, 1, 1, 1)
+        self.IQLE_Stock = QtWidgets.QLineEdit(self.frame)
+        self.IQLE_Stock.setObjectName("IQLE_Stock")
+        self.gridLayout_3.addWidget(self.IQLE_Stock, 1, 2, 1, 1)
+        self.gridLayout_4.addWidget(self.frame, 15, 0, 1, 4)
+        self.widget = QtWidgets.QWidget(self.Item_Frame)
+        self.widget.setObjectName("widget")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.widget)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.IQCB_Add = QtWidgets.QCheckBox(self.widget)
+        self.IQCB_Add.setText("")
+        self.IQCB_Add.setObjectName("IQCB_Add")
+        self.horizontalLayout_2.addWidget(self.IQCB_Add)
+        self.IQPB_AddProduct = QtWidgets.QPushButton(self.widget)
+        self.IQPB_AddProduct.setEnabled(False)
+        self.IQPB_AddProduct.setObjectName("IQPB_AddProduct")
+        self.horizontalLayout_2.addWidget(self.IQPB_AddProduct)
+        self.line = QtWidgets.QFrame(self.widget)
+        self.line.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line.setObjectName("line")
+        self.horizontalLayout_2.addWidget(self.line)
+        self.IQCB_Update = QtWidgets.QCheckBox(self.widget)
+        self.IQCB_Update.setText("")
+        self.IQCB_Update.setObjectName("IQCB_Update")
+        self.horizontalLayout_2.addWidget(self.IQCB_Update)
+        self.IQPB_UpdateProduct = QtWidgets.QPushButton(self.widget)
+        self.IQPB_UpdateProduct.setEnabled(False)
+        self.IQPB_UpdateProduct.setObjectName("IQPB_UpdateProduct")
+        self.horizontalLayout_2.addWidget(self.IQPB_UpdateProduct)
+        self.line_3 = QtWidgets.QFrame(self.widget)
+        self.line_3.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line_3.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_3.setObjectName("line_3")
+        self.horizontalLayout_2.addWidget(self.line_3)
+        self.IQCB_UpdateStock = QtWidgets.QCheckBox(self.widget)
+        self.IQCB_UpdateStock.setText("")
+        self.IQCB_UpdateStock.setObjectName("IQCB_UpdateStock")
+        self.horizontalLayout_2.addWidget(self.IQCB_UpdateStock)
+        self.IQPB_UpdateStock = QtWidgets.QPushButton(self.widget)
+        self.IQPB_UpdateStock.setEnabled(False)
+        self.IQPB_UpdateStock.setObjectName("IQPB_UpdateStock")
+        self.horizontalLayout_2.addWidget(self.IQPB_UpdateStock)
+        self.line_4 = QtWidgets.QFrame(self.widget)
+        self.line_4.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line_4.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_4.setObjectName("line_4")
+        self.horizontalLayout_2.addWidget(self.line_4)
+        self.IQPB_ClearProduct = QtWidgets.QPushButton(self.widget)
+        self.IQPB_ClearProduct.setObjectName("IQPB_ClearProduct")
+        self.horizontalLayout_2.addWidget(self.IQPB_ClearProduct)
+        self.line_2 = QtWidgets.QFrame(self.widget)
+        self.line_2.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_2.setObjectName("line_2")
+        self.horizontalLayout_2.addWidget(self.line_2)
+        self.IQPB_DeleteProduct = QtWidgets.QPushButton(self.widget)
+        self.IQPB_DeleteProduct.setObjectName("IQPB_DeleteProduct")
+        self.horizontalLayout_2.addWidget(self.IQPB_DeleteProduct)
+        self.horizontalLayout_2.setStretch(1, 1)
+        self.horizontalLayout_2.setStretch(4, 1)
+        self.horizontalLayout_2.setStretch(7, 1)
+        self.gridLayout_4.addWidget(self.widget, 16, 0, 1, 4)
+        self.horizontalLayout.addWidget(self.Item_Frame)
+        self.groupBox_2 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.groupBox_2.setObjectName("groupBox_2")
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.groupBox_2)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.OQLE_ProductFilter = QtWidgets.QLineEdit(self.groupBox_2)
+        self.OQLE_ProductFilter.setObjectName("OQLE_ProductFilter")
+        self.gridLayout_2.addWidget(self.OQLE_ProductFilter, 0, 1, 1, 1)
+        self.label_13 = QtWidgets.QLabel(self.groupBox_2)
+        self.label_13.setObjectName("label_13")
+        self.gridLayout_2.addWidget(self.label_13, 0, 0, 1, 1)
+        self.OQTB_Product = QtWidgets.QTableView(self.groupBox_2)
+        self.OQTB_Product.setStyleSheet("font: 10pt \"MS Shell Dlg 2\";")
+        self.OQTB_Product.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.OQTB_Product.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.OQTB_Product.setObjectName("OQTB_Product")
+        self.gridLayout_2.addWidget(self.OQTB_Product, 1, 0, 1, 2)
+        self.horizontalLayout.addWidget(self.groupBox_2)
+        self.horizontalLayout.setStretch(0, 1)
+        self.horizontalLayout.setStretch(1, 1)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.gridLayout.addWidget(self.scrollArea, 0, 0, 1, 1)
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.label_9.setText(_translate("MainWindow", "GST %"))
+        self.label_3.setText(_translate("MainWindow", "Product Id"))
+        self.label_2.setText(_translate("MainWindow", "Tamil Name"))
+        self.label_4.setText(_translate("MainWindow", "Barcode Input"))
+        self.label_11.setText(_translate("MainWindow", "Current Stock Avail"))
+        self.label_7.setText(_translate("MainWindow", "C.Sale Price (Retail)"))
+        self.label_8.setText(_translate("MainWindow", "C.Sale Price (Wholesale)"))
+        self.label_10.setText(_translate("MainWindow", "UOM"))
+        self.label.setText(_translate("MainWindow", "Product Name"))
+        self.label_12.setText(_translate("MainWindow", "Active"))
+        self.label_15.setText(_translate("MainWindow", "HSN"))
+        self.IQPB_TamilKeyboard.setText(_translate("MainWindow", "Tamil"))
+        self.IQCB_Active.setItemText(0, _translate("MainWindow", "Yes"))
+        self.IQCB_Active.setItemText(1, _translate("MainWindow", "No"))
+        self.label_6.setText(_translate("MainWindow", "MRP"))
+        self.label_5.setText(_translate("MainWindow", "Purchase Rate"))
+        self.label_14.setText(_translate("MainWindow", "New Stock Qty"))
+        self.IQPB_AddProduct.setText(_translate("MainWindow", "Add"))
+        self.IQPB_UpdateProduct.setText(_translate("MainWindow", "Update"))
+        self.IQPB_UpdateStock.setText(_translate("MainWindow", "Update Stock"))
+        self.IQPB_ClearProduct.setText(_translate("MainWindow", "Clear"))
+        self.IQPB_DeleteProduct.setText(_translate("MainWindow", "Delete"))
+        self.groupBox_2.setTitle(_translate("MainWindow", "Item Master"))
+        self.OQLE_ProductFilter.setPlaceholderText(_translate("MainWindow", "Enter the ProductName"))
+        self.label_13.setText(_translate("MainWindow", "Item Filter : "))

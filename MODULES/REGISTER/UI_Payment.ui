@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>660</width>
+    <height>413</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">/* Global font and base style for all widgets */
+QWidget {
+font:  9pt &quot;Bookman Old Style&quot;;
+
+    color: #1a1a1a;
+    background-color: #e6f2ff; /* very light blue background */
+}
+
+/* QPushButton */
+QPushButton {
+    background-color: #4da6ff; /* light blue */
+    color: black;
+    border: 1px solid #3399ff;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #3399ff;
+}
+
+QPushButton:pressed {
+    background-color: #007acc;
+}
+
+/* QLineEdit */
+QLineEdit {
+    border: 1px solid #3399ff;
+    border-radius: 4px;
+    padding: 4px;
+    background-color: #ffffff;
+    selection-background-color: #99ccff;
+}
+
+/* QTextEdit */
+QTextEdit {
+    border: 1px solid #3399ff;
+    border-radius: 4px;
+    background-color: #ffffff;
+    selection-background-color: #99ccff;
+}
+
+/* QLabel */
+QLabel {
+    color: #1a1a1a;
+    font-weight: normal;
+}
+
+/* QComboBox */
+QComboBox {
+    border: 1px solid #3399ff;
+    border-radius: 4px;
+    padding: 3px;
+    background-color: #ffffff;
+}
+
+QComboBox::drop-down {
+    border-left: 1px solid #3399ff;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #e6f2ff;
+    selection-background-color: #99ccff;
+}
+
+/* QTableView / QTreeView */
+QTableView, QTreeView {
+    gridline-color: #3399ff;
+    background-color: #ffffff;
+    alternate-background-color: #f2f9ff;
+    selection-background-color: #99ccff;
+}
+
+/* QHeaderView for tables */
+QHeaderView::section {
+    background-color: #4da6ff;
+    color: white;
+    padding: 4px;
+    border: 1px solid #3399ff;
+}
+
+/* QCheckBox and QRadioButton */
+QCheckBox, QRadioButton {
+    spacing: 5px;
+}
+
+QCheckBox::indicator, QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+/* QSlider */
+QSlider::groove:horizontal {
+    border: 1px solid #3399ff;
+    height: 6px;
+    background: #cce6ff;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background: #4da6ff;
+    border: 1px solid #3399ff;
+    width: 12px;
+    margin: -5px 0;
+    border-radius: 6px;
+}
+
+/* QProgressBar */
+QProgressBar {
+    border: 1px solid #3399ff;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #cce6ff;
+}
+
+QProgressBar::chunk {
+    background-color: #4da6ff;
+    width: 10px;
+}
+
+QGroupBox::title {
+    font-weight: bold;
+    color: #1a1a1a; /* optional: set title color */
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 3px;
+}
+
+
+/* Hover effect for enabled button */
+QPushButton:hover:!disabled {
+    background-color: #3399ff;
+}
+
+/* Pressed effect for enabled button */
+QPushButton:pressed:!disabled {
+    background-color: #007acc;
+}
+
+/* Disabled button */
+QPushButton:disabled {
+    background-color: #d9d9d9; /* light grey */
+    color: #a6a6a6;           /* grey text */
+    border: 1px solid #bfbfbf;
+}
+
+
+/* Drop-down button area */
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 20px;
+    border-left: 1px solid #3399ff;
+    background-color: #4da6ff; /* light blue button */
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    image:url(/Source_icon/chevrons-down.svg) /* custom arrow icon */
+}
+QComboBox::down-arrow {
+    image: url(:/Source_icon/chevrons-down.svg);
+    width: 12px;
+    height: 12px;
+}</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>636</width>
+         <height>326</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="QFrame" name="frame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Customer UID</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Payment Mode</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Date</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QDateEdit" name="IQDE_GenDate"/>
+           </item>
+           <item row="6" column="3">
+            <widget class="QComboBox" name="IQCB_PayMode">
+             <item>
+              <property name="text">
+               <string>Cash</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Gpay</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>NIFT</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Amount Received</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Phone Number</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="3">
+            <widget class="QLineEdit" name="IQLE_Amount"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>Invoice Number</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Customer Name</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QLineEdit" name="IQLE_InvNumber">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="3">
+            <widget class="QLineEdit" name="IQLE_PhoneNo">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3">
+            <widget class="QLineEdit" name="IQLE_CustomerName">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="3">
+            <widget class="QLineEdit" name="IQLE_CustomerUID">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="IQPB_Action">
+      <property name="font">
+       <font>
+        <family>Bookman Old Style</family>
+        <pointsize>9</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Apply</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

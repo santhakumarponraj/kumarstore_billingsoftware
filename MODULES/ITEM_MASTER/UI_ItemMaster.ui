@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1243</width>
+    <height>945</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="styleSheet">
+       <string notr="true">/* Global font and base style for all widgets */
+QWidget {
+font:  9pt &quot;Bookman Old Style&quot;;
+
+    color: #1a1a1a;
+    background-color: #e6f2ff; /* very light blue background */
+}
+
+/* QPushButton */
+QPushButton {
+    background-color: #4da6ff; /* light blue */
+    color: black;
+    border: 1px solid #3399ff;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #3399ff;
+}
+
+QPushButton:pressed {
+    background-color: #007acc;
+}
+
+/* QLineEdit */
+QLineEdit {
+    border: 1px solid #3399ff;
+    border-radius: 4px;
+    padding: 4px;
+    background-color: #ffffff;
+    selection-background-color: #99ccff;
+}
+
+/* QTextEdit */
+QTextEdit {
+    border: 1px solid #3399ff;
+    border-radius: 4px;
+    background-color: #ffffff;
+    selection-background-color: #99ccff;
+}
+
+/* QLabel */
+QLabel {
+    color: #1a1a1a;
+    font-weight: normal;
+}
+
+/* QComboBox */
+QComboBox {
+    border: 1px solid #3399ff;
+    border-radius: 4px;
+    padding: 3px;
+    background-color: #ffffff;
+}
+
+QComboBox::drop-down {
+    border-left: 1px solid #3399ff;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #e6f2ff;
+    selection-background-color: #99ccff;
+}
+
+/* QTableView / QTreeView */
+QTableView, QTreeView {
+    gridline-color: #3399ff;
+    background-color: #ffffff;
+    alternate-background-color: #f2f9ff;
+    selection-background-color: #99ccff;
+}
+
+/* QHeaderView for tables */
+QHeaderView::section {
+    background-color: #4da6ff;
+    color: white;
+    padding: 4px;
+    border: 1px solid #3399ff;
+}
+
+/* QCheckBox and QRadioButton */
+QCheckBox, QRadioButton {
+    spacing: 5px;
+}
+
+QCheckBox::indicator, QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+/* QSlider */
+QSlider::groove:horizontal {
+    border: 1px solid #3399ff;
+    height: 6px;
+    background: #cce6ff;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background: #4da6ff;
+    border: 1px solid #3399ff;
+    width: 12px;
+    margin: -5px 0;
+    border-radius: 6px;
+}
+
+/* QProgressBar */
+QProgressBar {
+    border: 1px solid #3399ff;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #cce6ff;
+}
+
+QProgressBar::chunk {
+    background-color: #4da6ff;
+    width: 10px;
+}
+
+QGroupBox::title {
+    font-weight: bold;
+    color: #1a1a1a; /* optional: set title color */
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 3px;
+}
+
+
+/* Hover effect for enabled button */
+QPushButton:hover:!disabled {
+    background-color: #3399ff;
+}
+
+/* Pressed effect for enabled button */
+QPushButton:pressed:!disabled {
+    background-color: #007acc;
+}
+
+/* Disabled button */
+QPushButton:disabled {
+    background-color: #d9d9d9; /* light grey */
+    color: #a6a6a6;           /* grey text */
+    border: 1px solid #bfbfbf;
+}
+
+
+/* Drop-down button area */
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 20px;
+    border-left: 1px solid #3399ff;
+    background-color: #4da6ff; /* light blue button */
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    image:url(/Source_icon/chevrons-down.svg) /* custom arrow icon */
+}
+QComboBox::down-arrow {
+    image: url(:/Source_icon/chevrons-down.svg);
+    width: 12px;
+    height: 12px;
+}</string>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>1241</width>
+         <height>923</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1">
+        <item>
+         <widget class="QFrame" name="Item_Frame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="6" column="0">
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>GST %</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Product Id</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Tamil Name</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Barcode Input</string>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="0">
+            <widget class="QLabel" name="label_11">
+             <property name="text">
+              <string>Current Stock Avail</string>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="0">
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>C.Sale Price (Retail)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>C.Sale Price (Wholesale)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="0">
+            <widget class="QLabel" name="label_10">
+             <property name="text">
+              <string>UOM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QLineEdit" name="IQLE_TamilName"/>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Product Name</string>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="0">
+            <widget class="QLabel" name="label_12">
+             <property name="text">
+              <string>Active</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QLabel" name="label_15">
+             <property name="text">
+              <string>HSN</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QPushButton" name="IQPB_TamilKeyboard">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Tamil</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2" colspan="2">
+            <widget class="QLineEdit" name="IQLE_ProductID">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2" colspan="2">
+            <widget class="QLineEdit" name="IQLE_BarcodeInput"/>
+           </item>
+           <item row="0" column="2" colspan="2">
+            <widget class="QLineEdit" name="IQLE_ProductName"/>
+           </item>
+           <item row="6" column="2" colspan="2">
+            <widget class="QLineEdit" name="IQLE_GST"/>
+           </item>
+           <item row="8" column="2" colspan="2">
+            <widget class="QLineEdit" name="IQLE_HsnCode"/>
+           </item>
+           <item row="9" column="2" colspan="2">
+            <widget class="QComboBox" name="IQCB_UOM"/>
+           </item>
+           <item row="10" column="2" colspan="2">
+            <widget class="QComboBox" name="IQCB_Active">
+             <item>
+              <property name="text">
+               <string>Yes</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>No</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="11" column="2" colspan="2">
+            <widget class="QLineEdit" name="IQLE_SalesPrice_R"/>
+           </item>
+           <item row="12" column="2" colspan="2">
+            <widget class="QLineEdit" name="IQLE_SalesPrice_W"/>
+           </item>
+           <item row="13" column="2" colspan="2">
+            <widget class="QLineEdit" name="IQLE_CurrentStock">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="14" column="0" colspan="4">
+            <widget class="QTableView" name="IQTB_StockEntry">
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="15" column="0" colspan="4">
+            <widget class="QFrame" name="frame">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>MRP</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_5">
+                <property name="text">
+                 <string>Purchase Rate</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QLabel" name="label_14">
+                <property name="text">
+                 <string>New Stock Qty</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLineEdit" name="IQLE_MRP"/>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="IQLE_PurchaseRate"/>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLineEdit" name="IQLE_Stock"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="16" column="0" colspan="4">
+            <widget class="QWidget" name="widget" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1,0,0,1,0,0,1,0,0,0,0">
+              <item>
+               <widget class="QCheckBox" name="IQCB_Add">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="IQPB_AddProduct">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Add</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="Line" name="line">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="IQCB_Update">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="IQPB_UpdateProduct">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Update</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="Line" name="line_3">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="IQCB_UpdateStock">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="IQPB_UpdateStock">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Update Stock</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="Line" name="line_4">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="IQPB_ClearProduct">
+                <property name="text">
+                 <string>Clear</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="Line" name="line_2">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="IQPB_DeleteProduct">
+                <property name="text">
+                 <string>Delete</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="title">
+           <string>Item Master</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="OQLE_ProductFilter">
+             <property name="placeholderText">
+              <string>Enter the ProductName</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_13">
+             <property name="text">
+              <string>Item Filter : </string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="QTableView" name="OQTB_Product">
+             <property name="styleSheet">
+              <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+             </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::SingleSelection</enum>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
