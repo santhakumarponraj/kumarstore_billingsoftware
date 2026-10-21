@@ -106,35 +106,12 @@ def Invoice_Master_FN():
                     )
 
         # -------------------------------------------------
-        # CHECK ADMINISTRATOR PRIVILEGES
+        # CHECK ADMINISTRATOR PRIVILEGES & SYNC TIME
         # -------------------------------------------------
-
-        if not is_admin():
-
-            print(
-                "Administrator privileges are required "
-                "to synchronize Windows system time."
-            )
-
-            print("Requesting Administrator privileges...")
-
-            ctypes.windll.shell32.ShellExecuteW(
-                None,
-                "runas",
-                sys.executable,
-                " ".join(sys.argv),
-                None,
-                1
-            )
-
-            # Close the current non-admin process
-            sys.exit(0)
-
-        # -------------------------------------------------
-        # SYNCHRONIZE SYSTEM TIME
-        # -------------------------------------------------
-
-        sync_system_time()
+        if is_admin():
+            sync_system_time()
+        else:
+            print("[INFO] Running without administrator privileges. System time synchronization skipped.")
 
     _bil_filter_timer = QtCore.QTimer()
     _bil_filter_timer.setSingleShot(True)
@@ -741,16 +718,21 @@ def Invoice_Master_FN():
         end_col = get_column_letter(last_col)
         ws.print_area = f"A1:{end_col}{last_row}"
         wb.save(fr"{ldir}\Invoive0.xlsx")
-        # os.system(fr"{ldir}\Invoive0.xlsx")
+        try:
+            wb.close()
+        except Exception:
+            pass
 
         import win32com.client
         excel = win32com.client.Dispatch("Excel.Application")
         excel.Visible = False
         file_path = fr"{ldir}\Invoive0.xlsx"
-        wb = excel.Workbooks.Open(file_path)
-        wb.PrintOut()   
-        wb.Close(False)
-        excel.Quit()
+        try:
+            wb_excel = excel.Workbooks.Open(file_path)
+            wb_excel.PrintOut()
+            wb_excel.Close(False)
+        finally:
+            excel.Quit()
 
     @Exception_Handle
     def Generate_Invoice(inp):
@@ -766,146 +748,145 @@ def Invoice_Master_FN():
 
             if not BillEdit:  # Generating new Invoice
                 BillEdit = True
-                for data in InvData:  # for every item in Bill Table - Should we group items brfore processing?
+                valid_items = [d for d in InvData if d[0] != "" and d[-2] != ""]
+                prod_ids = list({str(d[5]) for d in valid_items if str(d[5]).strip() != ""})
+                prod_meta = {}
+                if prod_ids:
+                    try:
+                        meta_rows = DB_Fetch(
+                            fr"SELECT product_id, stock, uom, gst FROM product_info WHERE product_id IN ({','.join(prod_ids)})",
+                            False, "LOL"
+                        )
+                        for r in meta_rows:
+                            prod_meta[int(r[0])] = {'stock': float(r[1]), 'uom': r[2], 'gst': r[3]}
+                    except Exception as e:
+                        print(e, "meta prefetch")
 
-                    if data[0] != "" and data[-2] != "":
-                        product_id = data[5]
-                        product_name = data[0]
-                        qty = float(data[1])
-                        sprice = float(data[2])
-                        total_amt = float(data[1]) * float(data[2])
-                        gst = data[4]
-                        # Get current Stock from Product_info
-                        previous_stock = \
-                        DB_Fetch(fr"select stock from product_info where product_id = {product_id}", False, "LOE")[-1]
-                        # reduce bill qty in stock and update in product info, if qty is higher than avl stock,
-                        # mark it as zero
-                        sql = fr"UPDATE `product_info` SET `stock` = {0 if (float(previous_stock) - float(qty)) < 0 else (float(previous_stock) - float(qty))} WHERE `product_id` = {product_id}"
-                        # print(sql)
+                for data in valid_items:  # for every item in Bill Table - Should we group items brfore processing?
+
+                    product_id = data[5]
+                    product_name = data[0]
+                    qty = float(data[1])
+                    sprice = float(data[2])
+                    total_amt = float(data[1]) * float(data[2])
+                    gst = data[4]
+                    pid_int = int(product_id)
+
+                    # Get current Stock from Product_info (use pre-fetched metadata if available)
+                    if pid_int in prod_meta:
+                        previous_stock = prod_meta[pid_int]['stock']
+                    else:
+                        previous_stock = float(DB_Fetch(fr"select stock from product_info where product_id = {product_id}", False, "LOE")[-1])
+
+                    # reduce bill qty in stock and update in product info, if qty is higher than avl stock,
+                    # mark it as zero
+                    new_stock = 0.0 if (float(previous_stock) - float(qty)) < 0 else (float(previous_stock) - float(qty))
+                    if pid_int in prod_meta:
+                        prod_meta[pid_int]['stock'] = new_stock
+
+                    sql = fr"UPDATE `product_info` SET `stock` = {new_stock} WHERE `product_id` = {product_id}"
+                    dbc.execute(sql)
+
+                    # Fetch current(!=0) Purchase Data
+                    purchase_data = DB_Fetch(
+                        fr"select uid,cost_price,avail_qty from purchase_info where avail_qty >0 and product_id = '{product_id}' order by uid",
+                        False, "LOL")
+                    pur_data_dict = {}
+                    ind_costprice = 0
+                    reduce_qty = 0
+                    chk_qty = qty
+
+                    # If there is no Purchase Data
+                    if len(purchase_data) == 0:
+                        # get the max uid
+                        maxi_sql = DB_Fetch(fr"SELECT IFNULL(MAX(uid), 1) FROM purchase_info;", False, "LOE")[-1] + 1
+
+                        # Get the latest C price to create a no stock entry
+                        pur_cpriceData = DB_Fetch(fr'''select cost_price,mrp from purchase_info where 
+                        product_id = {product_id} order by uid desc limit 1''', False, "LOE")
+                        if len(pur_cpriceData) == 0:
+                            pur_cprice = 0
+                            pur_mrp = 0
+                        else:
+                            pur_cprice = pur_cpriceData[0]
+                            pur_mrp = pur_cpriceData[1]
+
+                        # Add a No Stock entry with latest cost price and billed qty,
+                        sql = fr"""INSERT INTO `purchase_info` (`uid`,`pdate`, `product_id`, `cost_price`, 
+                        `purchase_qty`, `avail_qty`, `remark` , `mrp`) VALUES ({maxi_sql},'{Cur_Date_SQL}', 
+                        {product_id}, {pur_cprice}, {chk_qty}, {0}, 'NS',{pur_mrp})"""
                         dbc.execute(sql)
-                        db.commit()
 
-                        # Fetch current(!=0) Purchase Data
-                        purchase_data = DB_Fetch(
-                            fr"select uid,cost_price,avail_qty from purchase_info where avail_qty >0 and product_id = '{product_id}' order by uid",
-                            False, "LOL")
-                        pur_data_dict = {}
-                        ind_costprice = 0
-                        reduce_qty = 0
-                        chk_qty = qty
+                        # Create Purchase Dictionary
+                        pur_data_dict[int(maxi_sql)] = chk_qty
+                        ind_costprice = ind_costprice + (chk_qty * pur_cprice)
 
-                        # If there is no Purchase Data
-                        if len(purchase_data) == 0:
-                            # get the max uid
-                            maxi_sql = DB_Fetch(fr"SELECT IFNULL(MAX(uid), 1) FROM purchase_info;", False, "LOE")[-1] + 1
-
-
-                            # Get the latest C price to create a no stock entry
-                            pur_cpriceData = DB_Fetch(fr'''select cost_price,mrp from purchase_info where 
-                            product_id = {product_id} order by uid desc limit 1''', False, "LOE")
-                            if len(pur_cpriceData) == 0:
-                                pur_cprice = 0
-                                pur_mrp = 0
-                            else:
-                            # print(pur_cpriceData,"sample")
-                                pur_cprice = pur_cpriceData[0]
-                                pur_mrp = pur_cpriceData[1]
-
-                            # Is UID not auto incremental?
-                            # Add a No Stock entry with latest cost price and billed qty,
-
-                            sql = fr"""INSERT INTO `purchase_info` (`uid`,`pdate`, `product_id`, `cost_price`, 
-                            `purchase_qty`, `avail_qty`, `remark` , `mrp`) VALUES ({maxi_sql},'{Cur_Date_SQL}', 
-                            {product_id}, {pur_cprice}, {chk_qty}, {0}, 'NS',{pur_mrp})"""
-                        # print(sql)
+                    # if there is Purchase Data -
+                    for pi in range(len(purchase_data)):
+                        pur_uid = purchase_data[pi][0]
+                        pur_cprice = purchase_data[pi][1]
+                        pur_astock = purchase_data[pi][2]
+                        # if bill qty is lesser than earliest stock entry, reduce the bill qty and close the loop
+                        if pur_astock >= chk_qty:
+                            reduce_qty = pur_astock - chk_qty
+                            sql = fr"UPDATE `purchase_info` SET `avail_qty` = {reduce_qty} WHERE `uid` = {pur_uid}"
                             dbc.execute(sql)
-                            db.commit()
-
-                            # Create Purchase Dictionary
-                            pur_data_dict[int(maxi_sql)] = chk_qty
-                            # if Pur_cprice is zero, Then it will be tough to calc Profit/loss
+                            pur_data_dict[int(pur_uid)] = chk_qty
                             ind_costprice = ind_costprice + (chk_qty * pur_cprice)
-
-                        # if there is Purchase Data -
-                        for pi in range(len(purchase_data)):
-                            # print(pi,purchase_data,"purchase_data")
-                            pur_uid = purchase_data[pi][0]
-                            pur_cprice = purchase_data[pi][1]
-                            pur_astock = purchase_data[pi][2]
-                            # if bill qty is lesser than earliest stock entry, reduce the bill qty and close the loop
-                            if pur_astock >= chk_qty:
-                                reduce_qty = pur_astock - chk_qty
+                            break
+                        # if bill qty is greater than earliest avail stock entry
+                        else:
+                            if len(purchase_data) > pi + 1:
+                                chk_qty = chk_qty - pur_astock
+                                reduce_qty = 0
                                 sql = fr"UPDATE `purchase_info` SET `avail_qty` = {reduce_qty} WHERE `uid` = {pur_uid}"
-                                # print(sql)
                                 dbc.execute(sql)
-                                db.commit()
-                                pur_data_dict[int(pur_uid)] = chk_qty
-                                ind_costprice = ind_costprice + (chk_qty * pur_cprice)
-                                break
-                            # if bill qty is greater than earliest avail stock entry
+                                pur_data_dict[int(pur_uid)] = pur_astock
+                                ind_costprice = ind_costprice + (pur_astock * pur_cprice)
                             else:
-                                # Check for available stock entries,if available is more tha 1, reduce the available qty
-                                # from the stock entry and proceed
-                                if len(purchase_data) > pi + 1:
-                                    chk_qty = chk_qty - pur_astock
-                                    reduce_qty = 0
-                                    sql = fr"UPDATE `purchase_info` SET `avail_qty` = {reduce_qty} WHERE `uid` = {pur_uid}"
+                                reduce_qty = chk_qty - pur_astock
+                                sql = fr"UPDATE `purchase_info` SET `avail_qty` = 0 WHERE `uid` = {pur_uid}"
+                                dbc.execute(sql)
 
-                                    dbc.execute(sql)
-                                    db.commit()
+                                pur_data_dict[int(pur_uid)] = pur_astock
+                                ind_costprice = ind_costprice + (pur_astock * pur_cprice)
 
-                                    pur_data_dict[int(pur_uid)] = pur_astock  # ,pur_cprice
-                                    ind_costprice = ind_costprice + (pur_astock * pur_cprice)
-                                else:
-                                    # if there is 1 entry and there is no avail stock to reduce, reduce the avail stock
-                                    # and create a no stock entry
+                                maxi_sql = DB_Fetch(fr"select max(uid) from purchase_info", False, "LOE")[-1] + 1
+                                sql = fr"""INSERT INTO `purchase_info` (`uid`,`pdate`, `product_id`, `cost_price`, 
+                                `purchase_qty`, `avail_qty`, `remark`,`mrp`) VALUES ({maxi_sql},
+                                '{Cur_Date_SQL}', {product_id}, {pur_cprice}, {reduce_qty}, {0}, 'NS',{pur_mrp})"""
+                                dbc.execute(sql)
+                                pur_data_dict[int(maxi_sql)] = reduce_qty
+                                ind_costprice = ind_costprice + (reduce_qty * pur_cprice)
 
-                                    reduce_qty = chk_qty - pur_astock
-
-                                    sql = fr"UPDATE `purchase_info` SET `avail_qty` = 0 WHERE `uid` = {pur_uid}"
-                                    dbc.execute(sql)
-                                    db.commit()
-
-                                    pur_data_dict[int(pur_uid)] = pur_astock  # ,pur_cprice
-                                    ind_costprice = ind_costprice + (pur_astock * pur_cprice)
-
-                                    maxi_sql = DB_Fetch(fr"select max(uid) from purchase_info", False, "LOE")[-1] + 1
-                                    # print(maxi_sql)
-                                    # print(Cur_Date_SQL)
-                                    # print(fr"INSERT INTO `purchase_info` (`uid`,`pdate`, `product_id`, `cost_price`, `purchase_qty`, `avail_qty`, `remark`) VALUES ({maxi_sql},{Cur_Date_SQL}, {product_id}, {pur_cprice}, {reduce_qty}, {0}, 'NS')")
-
-                                    sql = fr"""INSERT INTO `purchase_info` (`uid`,`pdate`, `product_id`, `cost_price`, 
-                                    `purchase_qty`, `avail_qty`, `remark`,`mrp`) VALUES ({maxi_sql},
-                                    '{Cur_Date_SQL}', {product_id}, {pur_cprice}, {reduce_qty}, {0}, 'NS',{pur_mrp})"""
-                                    # print(sql)
-                                    dbc.execute(sql)
-                                    db.commit()
-                                    # creata Individual Part Net Cost price based on avail Stock
-                                    # Create a dict of where stock is reduced in purchase entry
-                                    pur_data_dict[int(maxi_sql)] = reduce_qty  # ,pur_cprice
-                                    ind_costprice = ind_costprice + (reduce_qty * pur_cprice)
-
-                        # Get the whole Profit data by subtracting the actual amount from net cost price
-
+                    # Get UOM and GST from pre-fetched metadata or DB
+                    if pid_int in prod_meta:
+                        uom_val = prod_meta[pid_int]['uom']
+                        gst_val = prod_meta[pid_int]['gst']
+                    else:
                         step_data = DB_Fetch(fr"select uom,gst from product_info where product_id = {product_id}", False,
                                             "LOE")
-                        # Insert into invoice item info db
-                        item_dict = {
-                            'fy': FY_Gen(ui.IQDE_InvDate.date().toPyDate()),
-                            'invoice_no': ui.IQSB_InvNo.value(),
-                            'product_id': product_id,
-                            'uom': step_data[0],
-                            'qty': qty,
-                            'rate': sprice,
-                            'gst': step_data[1],
-                            'i_pnl': total_amt - ind_costprice,
-                            'purchase_uid': json.dumps(pur_data_dict)
-                        }
+                        uom_val = step_data[0]
+                        gst_val = step_data[1]
 
-                        try:
-                            DB_Push_Dict(item_dict, 'invoice_item_info', False)
-                        except Exception as e:
-                            print(e,"gen 1")
+                    # Insert into invoice item info db
+                    item_dict = {
+                        'fy': FY_Gen(ui.IQDE_InvDate.date().toPyDate()),
+                        'invoice_no': ui.IQSB_InvNo.value(),
+                        'product_id': product_id,
+                        'uom': uom_val,
+                        'qty': qty,
+                        'rate': sprice,
+                        'gst': gst_val,
+                        'i_pnl': total_amt - ind_costprice,
+                        'purchase_uid': json.dumps(pur_data_dict)
+                    }
+
+                    try:
+                        DB_Push_Dict(item_dict, 'invoice_item_info', False)
+                    except Exception as e:
+                        print(e,"gen 1")
+
                 # insert into Invoice DB
                 inv_mtr_dict = {
                     'fy': FY_Gen(ui.IQDE_InvDate.date().toPyDate()),
@@ -918,8 +899,8 @@ def Invoice_Master_FN():
                     'amt_payabe': round_up_any(float(ui.IQLE_SubTotal.text())) ,
                     'amt_received': round_up_any(float(ui.IQLE_TotalAmount.text())) if ui.IQLE_RcvdAmount.text() == '' else round_up_any(float(ui.IQLE_RcvdAmount.text()))
                 }
-            # print(inv_mtr_dict)
                 DB_Push_Dict(inv_mtr_dict, 'invoice_master', False)
+                db.commit()
 
             else:  # Editing existing invoice
                 inv_number = ui.IQSB_InvNo.value()
