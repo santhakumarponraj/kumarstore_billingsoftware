@@ -293,3 +293,6 @@ tamilWindow = TamilKeyboard()
 
 def getUIDndCP():
     return DB_Fetch("select product_id,cost_price from product_info",False,"DIC")
+
+def getUIDndPurCost():
+    return DB_Fetch("select product_id,purchase_price from product_info",False,"DIC")

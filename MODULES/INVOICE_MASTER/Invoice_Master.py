@@ -15,11 +15,15 @@ import os
 import ctypes
 import subprocess
 
+
 @Exception_Handle
 def Invoice_Master_FN():
     print("------------Invoice Master Started-------------")
-
+    # print(ldir)
     ui = Inv_MtrUI
+
+    # print(,"========")
+
 
     print(ui.IQCB_AddOutstanding.isChecked(),"checking")
 
@@ -30,12 +34,13 @@ def Invoice_Master_FN():
 
     global costPriceDict
     costPriceDict = getUIDndCP()
-    
-    # add purchase price to the bill table for profit/loss calculation
-    
+
+    global purchasepriceDict
+    purchasepriceDict = getUIDndPurCost()
 
     global CustomerMobNo
     CustomerMobNo = Fetch_CustomerNo()
+
 
     @Exception_Handle
     def TimeUpdate():
@@ -136,6 +141,7 @@ def Invoice_Master_FN():
 
     @Exception_Handle
     def BilTblFilter(row, column, text):
+        # print("BilTblFilter")
         if column == 0:
             Update_PrdTbl(text)
             row, col = -1, 0
@@ -167,11 +173,12 @@ def Invoice_Master_FN():
     delegate = setup_table_with_text_changes(BilTbl)
     delegate.textChanged.connect(BilTblFilter)
 
+
     @Exception_Handle
     def Add_Item(index):
         # print("====Add Item===")
-        global costPriceDict, costIndex
-        
+        global costPriceDict, costIndex, purchasepriceDict
+
         data = get_row_values(PrdTbl, index.row())
         row = BilTbl.currentRow()
 
@@ -201,18 +208,19 @@ def Invoice_Master_FN():
 
         costIndex = data[0]
 
+        ui.IQLE_CostPrice.setText("Purchase Price : "+  str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
+
         BilTbl.setFocus(True)
         BilTbl.setCurrentCell(row, 1)
         BilTbl.blockSignals(False)
         PrdTbl.selectionModel().clearSelection()
 
-        getCpforItem(row)
 
     @Exception_Handle
     def BillTbl_functionality(*args):
         # print("bill tbl fn")
         global barcode_status
-        global costPriceDict
+        global costPriceDict,purchasepriceDict
 
         col = BilTbl.currentColumn()
         row = BilTbl.currentRow()
@@ -227,14 +235,18 @@ def Invoice_Master_FN():
                 Add_Item(BilTbl.model().index(0, 0))
                 BilTbl.blockSignals(False)
                 Update_PrdTbl("")
-                ui.IQLE_CostPrice.setText("Cost Price :    ")
+                costIndex = BilTbl.item(row, 5).text()
+                ui.IQLE_CostPrice.setText(fr"Purchase Price : "+  str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
+
                 return
+            
             else:
                 Update_PrdTbl("")  # ✅ Row already has data, just reset PrdTbl and do nothing
                 return
 
         # If changes in Qty or Price column, Calculate Amount
         if col == 1 or col == 2:
+            
             if get_row_values(BilTbl, BilTbl.currentRow())[0]:
                 frzItem = BilTbl.item(BilTbl.currentRow(), 0)
                 if frzItem is None or frzItem.text().strip() == "":
@@ -273,7 +285,9 @@ def Invoice_Master_FN():
                     # ✅ After Price (col 2) — reset PrdTbl FIRST, then move to next row
                     if col == 2:
                         Update_PrdTbl("")  # ✅ KEY FIX: Reset before setCurrentCell so col==0 trigger won't see rowCount==1
-                        ui.IQLE_CostPrice.setText("Cost Price :    ")
+                        # ui.IQLE_CostPrice.setText("Cost Price :    ")
+                        ui.IQLE_CostPrice.setText("Purchase Price : "+ " -- " +"Cost Price : " )
+                        # ui.IQLE_CostPrice.setText("Purchase Price : "+  str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
 
                         if BilTbl.rowCount() == row + 1:  # Last row
                             rowItem = get_row_values(BilTbl, row)
@@ -294,9 +308,7 @@ def Invoice_Master_FN():
 
         if col == 0 and BilTbl.hasFocus():
             BilTbl.setCurrentCell(BilTbl.currentRow(), BilTbl.currentColumn() + 1)
-
-            # ui.IQLE_CostPrice.setText("Cost Price :  000  ")
-            getCpforItem(row)
+            # ui.IQLE_CostPrice.setText("Cost Price :    ")
 
             try:
                 frzItem = BilTbl.item(BilTbl.currentRow(), 0)
@@ -307,8 +319,17 @@ def Invoice_Master_FN():
                 print(e, "Enter")
                 BilTbl.setCurrentCell(BilTbl.currentRow(), 0)
 
+            try:
+                costIndex = BilTbl.item(BilTbl.currentRow(), 5).text()
+                ui.IQLE_CostPrice.setText(fr"Purchase Price : "+  str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
+            except Exception as e:
+                print(e,"cost price error")
+                ui.IQLE_CostPrice.setText("Purchase Price : "+ " -- " +"Cost Price : " )
+                pass
+
         elif col == 0 and not BilTbl.hasFocus() and BilTbl.rowCount() != BilTbl.currentRow() + 1:
-            ui.IQLE_CostPrice.setText("Cost Price :    ")
+            # ui.IQLE_CostPrice.setText("Cost Price :    ")
+            ui.IQLE_CostPrice.setText("Purchase Price : "+ " -- " +"Cost Price : " )
             pass
 
         elif col == 1:
@@ -318,7 +339,8 @@ def Invoice_Master_FN():
         elif barcode_status and col == 2:
             barcode_status = False
             Update_PrdTbl("")  # ✅ Reset PrdTbl for barcode path too
-            ui.IQLE_CostPrice.setText("Cost Price :    ")
+            # ui.IQLE_CostPrice.setText("Cost Price :    ")
+            ui.IQLE_CostPrice.setText("Purchase Price : "+ " -- " +"Cost Price : " )
             if None not in get_row_values(BilTbl, BilTbl.rowCount() - 1):
                 BilTbl.setRowCount(BilTbl.rowCount() + 1)
                 BilTbl.setCurrentCell(BilTbl.rowCount() - 1, 0)
@@ -332,13 +354,16 @@ def Invoice_Master_FN():
                     BilTbl.setRowCount(BilTbl.rowCount() + 1)
                     Update_PrdTbl("")
                     BilTbl.setCurrentCell(BilTbl.currentRow() + 1, 0)
-                    ui.IQLE_CostPrice.setText("Cost Price :    ")
+                    # ui.IQLE_CostPrice.setText("Cost Price :    ")
+                    ui.IQLE_CostPrice.setText("Purchase Price : "+ " -- " +"Cost Price : " )
             else:
                 BilTbl.setCurrentCell(BilTbl.currentRow() + 1, 0)
                 if col == 2:
                     Update_PrdTbl("")  # ✅ Reset here too for safety
-                    ui.IQLE_CostPrice.setText("Cost Price :    ")
+                    # ui.IQLE_CostPrice.setText("Cost Price :    ")
+                    ui.IQLE_CostPrice.setText("Purchase Price : "+ " -- " +"Cost Price : " )
     
+
     @Exception_Handle
     def round_up_any(n):
         i = int(n)
@@ -350,7 +375,6 @@ def Invoice_Master_FN():
         SQL_Product = fr''' SELECT product_id as ID, product_name as name, tamil_name as Tamil, uom as UOM, 
         {price} as Price,GST,cost_price FROM product_info WHERE active_status = "Y" 
         and (Product_name like "{filter}%" or barcode = "{filter}") order by Product_Name '''
-
         PrdTbl_PushData('Product_Model', PrdTbl, SQL_Product)
 
     @Exception_Handle
@@ -388,21 +412,29 @@ def Invoice_Master_FN():
 
     @Exception_Handle
     def getCpforItem(row):
-        global costPriceDict
+        global costPriceDict,purchasepriceDict
+
         costitem = BilTbl.item(row, 5)
+        # costIndex = BilTbl.item(BilTbl.currentRow(), 5).text()
         if costitem is not None:
             costIndex = costitem.text()
             if costIndex not in [None,""]:
                 try:
-                    ui.IQLE_CostPrice.setText( "Cost Price :    " + str(costPriceDict[int(costIndex)]))
+                    
+                    ui.IQLE_CostPrice.setText("Purchase Price : "+  str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
+                
                 except Exception as e:
                     
                     costPriceDict = getUIDndCP()
-                    ui.IQLE_CostPrice.setText( "Cost Price :    " + str(costPriceDict[int(costIndex)]))
+                    purchasepriceDict = getUIDndPurCost()
+
+                    ui.IQLE_CostPrice.setText("Purchase Price : "+  str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
 
             else:
-                ui.IQLE_CostPrice.setText( "Cost Price :    ")
+                # ui.IQLE_CostPrice.setText( "Cost Price :    ")
+                ui.IQLE_CostPrice.setText("Purchase Price : "+ " -- " +"Cost Price : " )
 
+         
     @Exception_Handle
     def Update_customerDetails():
 
@@ -532,7 +564,7 @@ def Invoice_Master_FN():
         #     ui.IQPB_SavePrint.setEnabled(False)
         #     ui.IQPB_Save.setEnabled(False)
 
-    @Exception_Handle
+    @Exception_Handle  #workin Excel
     def Bill_Generating_Invoice():
         global BillEdit
         InvData = Fetch_Table_Values(BilTbl)
@@ -770,37 +802,39 @@ def Invoice_Master_FN():
 
                         # Fetch current(!=0) Purchase Data
                         purchase_data = DB_Fetch(
-                            fr"select uid,cost_price,avail_qty from purchase_info where avail_qty >0 and product_id = '{product_id}' order by uid",
+                            fr"select uid,cost_price,avail_qty,purchase_price from purchase_info where avail_qty > 0 and product_id = '{product_id}' order by uid",
                             False, "LOL")
                         pur_data_dict = {}
                         ind_costprice = 0
                         reduce_qty = 0
                         chk_qty = qty
+                        pur_costprice = 0
 
                         # If there is no Purchase Data
                         if len(purchase_data) == 0:
                             # get the max uid
                             maxi_sql = DB_Fetch(fr"SELECT IFNULL(MAX(uid), 1) FROM purchase_info;", False, "LOE")[-1] + 1
 
-
                             # Get the latest C price to create a no stock entry
-                            pur_cpriceData = DB_Fetch(fr'''select cost_price,mrp from purchase_info where 
+                            pur_cpriceData = DB_Fetch(fr'''select cost_price,mrp,purchase_price from purchase_info where 
                             product_id = {product_id} order by uid desc limit 1''', False, "LOE")
                             if len(pur_cpriceData) == 0:
                                 pur_cprice = 0
                                 pur_mrp = 0
+                                pur_costprice = 0
+                            
                             else:
                             # print(pur_cpriceData,"sample")
                                 pur_cprice = pur_cpriceData[0]
                                 pur_mrp = pur_cpriceData[1]
-
+                                pur_costprice = pur_cpriceData[2]
                             # Is UID not auto incremental?
                             # Add a No Stock entry with latest cost price and billed qty,
 
-                            sql = fr"""INSERT INTO `purchase_info` (`uid`,`pdate`, `product_id`, `cost_price`, 
+                            sql = fr"""INSERT INTO `purchase_info` (`uid`,`pdate`, `product_id`, `purchase_price`, `cost_price`, 
                             `purchase_qty`, `avail_qty`, `remark` , `mrp`) VALUES ({maxi_sql},'{Cur_Date_SQL}', 
-                            {product_id}, {pur_cprice}, {chk_qty}, {0}, 'NS',{pur_mrp})"""
-                        # print(sql)
+                            {product_id}, {pur_costprice}, {pur_cprice}, {chk_qty}, {0}, 'NS',{pur_mrp})"""
+                            # print(sql)
                             dbc.execute(sql)
                             db.commit()
 
@@ -815,6 +849,7 @@ def Invoice_Master_FN():
                             pur_uid = purchase_data[pi][0]
                             pur_cprice = purchase_data[pi][1]
                             pur_astock = purchase_data[pi][2]
+                            pur_costprice = purchase_data[pi][3]
                             # if bill qty is lesser than earliest stock entry, reduce the bill qty and close the loop
                             if pur_astock >= chk_qty:
                                 reduce_qty = pur_astock - chk_qty
@@ -839,6 +874,7 @@ def Invoice_Master_FN():
 
                                     pur_data_dict[int(pur_uid)] = pur_astock  # ,pur_cprice
                                     ind_costprice = ind_costprice + (pur_astock * pur_cprice)
+                                
                                 else:
                                     # if there is 1 entry and there is no avail stock to reduce, reduce the avail stock
                                     # and create a no stock entry
@@ -857,10 +893,11 @@ def Invoice_Master_FN():
                                     # print(Cur_Date_SQL)
                                     # print(fr"INSERT INTO `purchase_info` (`uid`,`pdate`, `product_id`, `cost_price`, `purchase_qty`, `avail_qty`, `remark`) VALUES ({maxi_sql},{Cur_Date_SQL}, {product_id}, {pur_cprice}, {reduce_qty}, {0}, 'NS')")
 
-                                    sql = fr"""INSERT INTO `purchase_info` (`uid`,`pdate`, `product_id`, `cost_price`, 
+                                    sql = fr"""INSERT INTO `purchase_info` (`uid`,`pdate`, `product_id`,`purchase_price`, `cost_price`,
                                     `purchase_qty`, `avail_qty`, `remark`,`mrp`) VALUES ({maxi_sql},
-                                    '{Cur_Date_SQL}', {product_id}, {pur_cprice}, {reduce_qty}, {0}, 'NS',{pur_mrp})"""
+                                    '{Cur_Date_SQL}', {product_id},{pur_costprice}, {pur_cprice}, {reduce_qty}, {0}, 'NS',{pur_mrp})"""
                                     # print(sql)
+                                    # uid, pdate, product_id, purchase_price, cost_price, purchase_qty, mrp, avail_qty, remark
                                     dbc.execute(sql)
                                     db.commit()
                                     # creata Individual Part Net Cost price based on avail Stock
@@ -870,8 +907,7 @@ def Invoice_Master_FN():
 
                         # Get the whole Profit data by subtracting the actual amount from net cost price
 
-                        step_data = DB_Fetch(fr"select uom,gst from product_info where product_id = {product_id}", False,
-                                            "LOE")
+                        step_data = DB_Fetch(fr"select uom,gst from product_info where product_id = {product_id}", False,"LOE")
                         # Insert into invoice item info db
                         item_dict = {
                             'fy': FY_Gen(ui.IQDE_InvDate.date().toPyDate()),
@@ -914,8 +950,8 @@ def Invoice_Master_FN():
                 # So item_vals[0]=product_id, [1]=qty, [2]=purchase_uid
                 existing_items = DB_Fetch(
                     fr"SELECT uid, product_id, qty, purchase_uid FROM invoice_item_info WHERE invoice_no = '{inv_number}'",
-                    False, "DOL"
-                )
+                    False, "DOL")
+                
                 print(f"[EDIT] Existing items fetched: {existing_items}")
 
                 # ── STEP 2: Reverse all stock for every existing item ─────────────
@@ -964,20 +1000,18 @@ def Invoice_Master_FN():
                                 dbc.execute(fr"DELETE FROM purchase_info WHERE uid = {pur_uid_int} AND remark = 'NS'")
                                 db.commit()
                                 print(f"  [DELETE NS] Deleted NS entry uid={pur_uid_int}")
+                            
                             else:
                                 # Restore the deducted qty back into the purchase entry
                                 restored_avail = cur_avail + pur_qty
-                                dbc.execute(
-                                    fr"UPDATE purchase_info SET avail_qty = {restored_avail} WHERE uid = {pur_uid_int}"
-                                )
+                                dbc.execute(fr"UPDATE purchase_info SET avail_qty = {restored_avail} WHERE uid = {pur_uid_int}")
                                 db.commit()
                                 print(f"  [RESTORE] purchase_info uid={pur_uid_int}: {cur_avail} → {restored_avail}")
 
                                 # Restore product_info stock
                                 cur_stock_row = DB_Fetch(
-                                    fr"SELECT stock FROM product_info WHERE product_id = {item_pid}",
-                                    False, "LOE"
-                                )
+                                    fr"SELECT stock FROM product_info WHERE product_id = {item_pid}",False, "LOE")
+                                
                                 if len(cur_stock_row) > 0:
                                     cur_stock    = float(cur_stock_row[-1])
                                     new_stock    = cur_stock + pur_qty
@@ -1020,12 +1054,14 @@ def Invoice_Master_FN():
                         WHERE inv_no = '{inv_number}' and fy = '{FY_Gen(Cur_Date)}' """)
                     db.commit()
                     print(f"[UPDATE] invoice_master updated for inv_no={inv_number}")
+                
                 except Exception as e:
                     print(f"[ERROR] Updating invoice_master: {e}")
                     db.rollback()
 
                 # ── STEP 5: Re-apply current table rows using FIFO stock logic ────
                 cur_table_data = Fetch_Table_Values(BilTbl)
+                
                 if ['', '', '', '', '', '', ''] in cur_table_data:
                     cur_table_data.remove(['', '', '', '', '', '', ''])
 
@@ -1042,6 +1078,7 @@ def Invoice_Master_FN():
                         sprice       = float(data[2])
                         total_amt    = qty * sprice
                         print(f"[ITEM] product_id={product_id} | name={product_name} | qty={qty} | price={sprice}")
+                    
                     except Exception as e:
                         print(f"[ERROR] Parsing table row {data}: {e}")
                         continue
@@ -1057,6 +1094,7 @@ def Invoice_Master_FN():
                         dbc.execute(fr"UPDATE product_info SET stock = {new_stock} WHERE product_id = {product_id}")
                         db.commit()
                         print(f"  [STOCK DEDUCT] product_id={product_id}: {prev_stock} → {new_stock}")
+                    
                     except Exception as e:
                         print(f"  [ERROR] Deducting product stock for product_id={product_id}: {e}")
                         db.rollback()
@@ -1064,14 +1102,15 @@ def Invoice_Master_FN():
 
                     # FIFO deduction from purchase_info
                     purchase_data = DB_Fetch(
-                        fr"SELECT uid, cost_price, avail_qty FROM purchase_info WHERE avail_qty > 0 AND product_id = '{product_id}' ORDER BY uid",
-                        False, "LOL"
-                    )
+                        fr"SELECT uid, cost_price, avail_qty,purchase_price FROM purchase_info WHERE avail_qty > 0 AND product_id = '{product_id}' ORDER BY uid",
+                        False, "LOL")
+                    
                     pur_data_dict = {}
                     ind_costprice = 0.0
                     chk_qty       = qty
                     pur_cprice    = 0.0
                     pur_mrp       = 0.0
+                    pur_costprice = 0.0
 
                     print(f"  [FIFO] Available purchase lots: {purchase_data}")
 
@@ -1080,27 +1119,33 @@ def Invoice_Master_FN():
                         try:
                             maxi_sql = DB_Fetch(fr"SELECT IFNULL(MAX(uid), 1) FROM purchase_info", False, "LOE")[-1] + 1
                             pur_meta = DB_Fetch(
-                                fr"SELECT cost_price, mrp FROM purchase_info WHERE product_id = {product_id} ORDER BY uid DESC LIMIT 1",
-                                False, "LOE"
-                            )
+                                fr"SELECT cost_price, mrp,purchase_price FROM purchase_info WHERE product_id = {product_id} ORDER BY uid DESC LIMIT 1",
+                                False, "LOE")
+                            
                             if len(pur_meta) >= 2:
                                 pur_cprice = float(pur_meta[0])
                                 pur_mrp    = float(pur_meta[1])
+                                pur_costprice = float(pur_meta[2])
+
                             elif len(pur_meta) == 1:
                                 pur_cprice = float(pur_meta[0])
                                 pur_mrp    = 0.0
+                                pur_costprice = 0.0
+
                             else:
                                 pur_cprice = 0.0
                                 pur_mrp    = 0.0
+                                pur_costprice = 0.0
 
                             dbc.execute(fr"""
-                                INSERT INTO purchase_info (uid, pdate, product_id, cost_price, purchase_qty, avail_qty, remark, mrp)
-                                VALUES ({maxi_sql}, '{Cur_Date_SQL}', {product_id}, {pur_cprice}, {chk_qty}, 0, 'NS', {pur_mrp})
+                                INSERT INTO purchase_info (uid, pdate, product_id, purchase_price,cost_price, purchase_qty, avail_qty, remark, mrp)
+                                VALUES ({maxi_sql}, '{Cur_Date_SQL}', {product_id}, {pur_costprice},{pur_cprice}, {chk_qty}, 0, 'NS', {pur_mrp})
                             """)
                             db.commit()
                             pur_data_dict[int(maxi_sql)] = chk_qty
                             ind_costprice += chk_qty * pur_cprice
                             print(f"  [NS INSERT] uid={maxi_sql} | qty={chk_qty} | cprice={pur_cprice}")
+                        
                         except Exception as e:
                             print(f"  [ERROR] NS insert for product_id={product_id}: {e}")
                             db.rollback()
@@ -1112,14 +1157,15 @@ def Invoice_Master_FN():
                                 pur_uid    = purchase_data[pi][0]
                                 pur_cprice = float(purchase_data[pi][1])
                                 pur_astock = float(purchase_data[pi][2])
+                                pur_costprice = float(purchase_data[pi][3])
 
                                 # Try to get mrp for NS fallback later
                                 try:
                                     pur_mrp_row = DB_Fetch(
-                                        fr"SELECT mrp FROM purchase_info WHERE uid = {pur_uid}",
-                                        False, "LOE"
-                                    )
+                                        fr"SELECT mrp FROM purchase_info WHERE uid = {pur_uid}",False, "LOE")
+                                    
                                     pur_mrp = float(pur_mrp_row[0]) if len(pur_mrp_row) > 0 else 0.0
+                                
                                 except Exception:
                                     pur_mrp = 0.0
 
@@ -1162,8 +1208,8 @@ def Invoice_Master_FN():
                                                 fr"SELECT IFNULL(MAX(uid), 1) FROM purchase_info", False, "LOE"
                                             )[-1] + 1
                                             dbc.execute(fr"""
-                                                INSERT INTO purchase_info (uid, pdate, product_id, cost_price, purchase_qty, avail_qty, remark, mrp)
-                                                VALUES ({maxi_sql}, '{Cur_Date_SQL}', {product_id}, {pur_cprice}, {reduce_qty}, 0, 'NS', {pur_mrp})
+                                                INSERT INTO purchase_info (uid, pdate, product_id, purchase_price,cost_price, purchase_qty, avail_qty, remark, mrp)
+                                                VALUES ({maxi_sql}, '{Cur_Date_SQL}', {product_id}, {pur_costprice},{pur_cprice}, {reduce_qty}, 0, 'NS', {pur_mrp})
                                             """)
                                             db.commit()
                                             pur_data_dict[int(maxi_sql)] = reduce_qty
@@ -1212,6 +1258,7 @@ def Invoice_Master_FN():
         else:
             show_info_msg("No Invoice Data", "Please Select the Billing Details")
 
+
     @Exception_Handle
     def delete_BilTbl_Row():
         data = Fetch_Table_Values(BilTbl)
@@ -1225,7 +1272,7 @@ def Invoice_Master_FN():
     @Exception_Handle
     def ClearWindow():
         global BillEdit 
-        global costPriceDict,costIndex ,CustomerMobNo
+        global costPriceDict,costIndex ,CustomerMobNo,purchasepriceDict
 
         ui.IQDE_InvDate.setDate(QDate.currentDate())
 
@@ -1265,8 +1312,11 @@ def Invoice_Master_FN():
         BilTbl.setFocus(True)
         BilTbl.setCurrentCell(0,0)
         BilTbl.edit(BilTbl.currentIndex())
-        ui.IQLE_CostPrice.setText("Cost Price :    ")
+        # ui.IQLE_CostPrice.setText("Cost Price :    ")
+        ui.IQLE_CostPrice.setText("Purchase Price : "+ " -- " +"Cost Price : " )
+
         costPriceDict = getUIDndCP()
+        purchasepriceDict = getUIDndPurCost()
 
         ui.IQLE_SubTotal.blockSignals(True)
         ui.IQLE_Discount.blockSignals(True)
@@ -1323,7 +1373,9 @@ def Invoice_Master_FN():
 
         Clear_SpecificData()
 
+        # print(FY_Gen)
 
+        
         if BillEdit:
 
             inv_data = DB_Fetch(fr"""select gdate, mob_no, sales_man, pay_mode, discount, amt_payabe, 
@@ -1426,21 +1478,17 @@ def Invoice_Master_FN():
     @Exception_Handle
     def Delete_Invoice():
 
-        invoiceNumber = ui.IQSB_InvNo.value()
-
-        if get_info_msg(fr"Delete Invoice No : {invoiceNumber}", fr"Please confirm to delete the invoice Number : {invoiceNumber}"):
-            
+        if get_info_msg("Delete Invoice", "Please confirm to delete the invoice"):
+            invoiceNumber = ui.IQSB_InvNo.value()
 
             itemInfoData = DB_Fetch(
-                fr"""select uid,product_id,purchase_uid from invoice_item_info where invoice_no = '{invoiceNumber}' 
-                and active_status = 'Y' and fy = '{FY_Gen(Cur_Date)}'""",False, "DOL")
-
-            # print(itemInfoData)
+                fr"select product_id,uid,purchase_uid from invoice_item_info where invoice_no = '{invoiceNumber}' and active_status = 'Y'",
+                False, "DOL")
 
             for dkey, dvalue in itemInfoData.items():
-                # print(dkey, dvalue, "item")
-                productId = dvalue[0]
-                productitemId = dkey
+              # print(dkey, dvalue, "item")
+                productId = dkey
+                productitemId = dvalue[0]
                 productQty = json.loads(dvalue[1])
 
                 sql = fr"update invoice_item_info set active_status = 'N' where uid = '{productitemId}'"
@@ -1448,10 +1496,10 @@ def Invoice_Master_FN():
                 db.commit()
 
                 for prodkey, prodvalue in json.loads(dvalue[1]).items():
+                  # print(prodkey, prodvalue, "individual")
 
-                    prodData = DB_Fetch(fr"""select purchase_qty,avail_qty,remark from purchase_info 
-                    where uid = {prodkey}""", False, "LOE")
-                    
+                    prodData = DB_Fetch(
+                        fr"select purchase_qty,avail_qty,remark from purchase_info where uid = {prodkey}", False, "LOE")
                     purQTY = prodData[0]
                     availStock = prodData[1]
                     remarkData = prodData[2]
@@ -1479,8 +1527,8 @@ def Invoice_Master_FN():
                         dbc.execute(productsql)
                         db.commit()
 
-            sql = fr"""update invoice_master set active_status = 'N' 
-            where inv_no = '{invoiceNumber}' and fy = '{FY_Gen(Cur_Date)}' """
+            sql = fr"""update invoice_master set active_status = 'N' where 
+            inv_no = '{invoiceNumber}' and fy = '{FY_Gen(Cur_Date)}' """
             dbc.execute(sql)
             db.commit()
             ui.IQSB_InvNo.setStyleSheet("QSpinBox { background-color: lightcoral; }")
@@ -1520,7 +1568,10 @@ def Invoice_Master_FN():
     PrdTbl.setTabKeyNavigation(False)
     BilTbl.setTabKeyNavigation(False)
     BilTbl.setRowCount(1)
+    # BilTbl.setFocus(True)
     PrdTbl.activated.connect(Add_Item)
+    # BilTbl.activated.connect(lambda: BilTbl_func())
+    # BilTbl.cellChanged.connect(Calc_Amount)
     BilTbl.activated.connect(BillTbl_functionality)
     BilTbl.cellChanged.connect(BillTbl_functionality)
 
