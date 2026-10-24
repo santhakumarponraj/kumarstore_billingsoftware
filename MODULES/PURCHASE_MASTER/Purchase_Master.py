@@ -9,9 +9,11 @@ def Purchase_Master_FN():
     ui = Prc_MtrUI
 
     tbl = ui.PurchaseTable
+
     @Exception_Handle
     def Generate_Table_Entry():
-        # print(tbl.currentColumn())
+        # print(tbl.currentColumn(),"=============")
+
         if tbl.currentColumn() == 2:
             exist = Fetch_Table_Values(tbl)
             exist_prod = [x[1] for x in exist]
@@ -39,8 +41,18 @@ def Purchase_Master_FN():
             CB.setEditable(True)
 
             CB.addItem("","")
-            for name,barcode in ProductBarCodeList():
-                CB.addItem(name,barcode)
+
+            if ui.IQCB_Language.currentText() == "Tamil":
+                print(ProductBarCodeList())
+                for name,barcode,tamil_name in ProductBarCodeList():
+                    CB.addItem(tamil_name + " - " + name ,barcode)
+            else:
+                for name,barcode,tamil_name in ProductBarCodeList():
+                    CB.addItem(name,barcode)
+
+            # for name,barcode,tamil_name in ProductBarCodeList():
+            #     CB.addItem(name,barcode)
+
             Dynamic_Filter_ComboBox(CB)
             CB.lineEdit().returnPressed.connect(Update_BarcodeText)
             CB.currentIndexChanged.connect(Update_ProductData)
@@ -56,14 +68,21 @@ def Purchase_Master_FN():
             CB = QComboBox()
             CB.setEditable(True)
             CB.addItem("","")
-            for name,barcode in ProductBarCodeList():
-                CB.addItem(name,barcode)
+
+            if ui.IQCB_Language.currentText() == "Tamil":
+                for name,barcode,tamil_name in ProductBarCodeList():
+                    CB.addItem(tamil_name + " - " + name ,barcode)
+            else:
+                for name,barcode,tamil_name in ProductBarCodeList():
+                    CB.addItem(name,barcode)
+
             Dynamic_Filter_ComboBox(CB)
             CB.lineEdit().returnPressed.connect(Update_BarcodeText)
             CB.currentIndexChanged.connect(Update_ProductData)
             tbl.setCellWidget(row,1,CB)
             tbl.setCurrentCell(row, 1)
 
+    @Exception_Handle
     def Update_BarcodeText():
         # print("I'm here return pressed")
         tindex = tbl.currentIndex()
@@ -74,28 +93,36 @@ def Purchase_Master_FN():
             val.setCurrentIndex(index)
 
 
-
-
-
     @Exception_Handle
     def Update_ProductData(arg):
-        print("Activation")
+        # print("Activation")
         index = tbl.currentIndex()
         if index.column()== 1:
             val = tbl.cellWidget(index.row(),index.column())
             if val.currentText() !="":
-                sql = fr'''
-                        select product_id,mrp,cost_price,wholesale,retail from product_info where 
-                        product_name =  '{val.currentText()}'
-                    ''' 
-                
+
+                if ui.IQCB_Language.currentText() == "Tamil":
+                    try:
+                        sql = fr'''select product_id,mrp,cost_price,wholesale,retail,purchase_price from product_info where 
+                                    product_name =  '{val.currentText().split(" - ")[1]}' '''
+                    except Exception as e:
+                        print(e)
+                        sql = fr'''select product_id,mrp,cost_price,wholesale,retail,purchase_price from product_info where 
+                                    product_name =  '{val.currentText()}' '''
+                else:
+                    sql = fr'''select product_id,mrp,cost_price,wholesale,retail,purchase_price from product_info where 
+                                product_name =  '{val.currentText()}' '''
+
                 try:
-                    temp = DB_Fetch(sql,True,"DOC")
+                    temp = DB_Fetch(sql,False,"DOC")
                     tbl.setItem(index.row(),3, T_itm(str(temp['cost_price'])))
                     tbl.setItem(index.row(),4, T_itm(str(temp['mrp']))) 
                     tbl.setItem(index.row(),5, T_itm(str(temp['retail']))) 
                     tbl.setItem(index.row(),6, T_itm(str(temp['wholesale'])))  
-                    tbl.setItem(index.row(),0, T_itm(str(temp['product_id'])))  
+                    tbl.setItem(index.row(),0, T_itm(str(temp['product_id']))) 
+                    tbl.setItem(index.row(),9, T_itm(str(temp['purchase_price']))) 
+
+                
                 except:
                     temp = T_itm('')
                     temp.setFlags(temp.flags() & ~Qt.ItemIsEditable)
@@ -121,6 +148,11 @@ def Purchase_Master_FN():
                     temp.setFlags(temp.flags() & ~Qt.ItemIsEditable)
                     temp.setBackground(QColor("#ffcccc"))
                     tbl.setItem(index.row(),0, temp)
+                    #---
+                    temp = T_itm('')
+                    temp.setFlags(temp.flags() & ~Qt.ItemIsEditable)
+                    temp.setBackground(QColor("#ffcccc"))
+                    tbl.setItem(index.row(),9, temp)
 
             else:
                 tbl.setItem(index.row(),3, T_itm(str("0.0")))
@@ -128,6 +160,7 @@ def Purchase_Master_FN():
                 tbl.setItem(index.row(),5, T_itm(str("0.0")))
                 tbl.setItem(index.row(),6, T_itm(str("0.0")))
                 tbl.setItem(index.row(),0, T_itm(str("0.0")))
+                tbl.setItem(index.row(),9, T_itm(str("0.0")))
 
     @Exception_Handle
     def Calculate_Values(row,column):
@@ -144,10 +177,12 @@ def Purchase_Master_FN():
 
                     tbl.setItem(row,7,T_itm(RPP))
                     tbl.setItem(row,8,T_itm(WPP))
+                
                 else:
                     
                     tbl.setItem(row,7,T_itm("NA"))
                     tbl.setItem(row,8,T_itm("NA"))
+            
             except Exception as e:pass
 
             data = Fetch_Table_Values(tbl)
@@ -172,12 +207,14 @@ def Purchase_Master_FN():
         ui.OQLE_NetProdCount.setText("0")
         ui.OQLE_NetProdQty.setText("0")     
         ui.OQLE_NetProdPrice.setText("0")
+        ui.IQPB_PushPurchaseEntry.setEnabled(True)
 
     @Exception_Handle    
     def DeleteTableEntry():
         if get_info_msg("Delete Confirmation","Please confirm to delete the selected entry"):
             if tbl.currentRow() >0:
                 tbl.removeRow(tbl.currentRow())
+            
             else:
                 tbl.setRowCount(0)
                 Generate_Table_Entry()
@@ -195,11 +232,12 @@ def Purchase_Master_FN():
             if len(prodId) > 1:
                 sql = fr"""select product_id,stock from product_info 
                 where product_id in {tuple(prodId)}"""
+            
             else:
                 sql = fr"""select product_id,stock from product_info 
                             where product_id in ('{prodId[0]}')"""
 
-            sqlData = DB_Fetch(sql, True, 'DIC')
+            sqlData = DB_Fetch(sql, False, 'DIC')
 
             # print(sqlData)
 
@@ -211,12 +249,14 @@ def Purchase_Master_FN():
                     'cost_price': float(tblValue[3]),
                     'mrp': float(tblValue[4]),
                     'retail': float(tblValue[5]),
-                    'wholesale': float(tblValue[6])
+                    'wholesale': float(tblValue[6]),
+                    'purchase_price': float(tblValue[9])
                 }
 
                 prodDictUID = {
                     'product_id': tblValue[0]
                 }
+
                 DB_Update_Dict(proddict, prodDictUID, 'product_info', False)
 
                 purcDict = {
@@ -225,26 +265,64 @@ def Purchase_Master_FN():
                     'mrp' : float(tblValue[4]),
                     'cost_price' : float(tblValue[3]),
                     'purchase_qty' : float(tblValue[2]),
-                    'avail_qty' : float(tblValue[2])
+                    'avail_qty' : float(tblValue[2]),
+                    'purchase_price' : float(tblValue[9])
                 }
                 DB_Push_Dict(purcDict, 'purchase_info', False)
 
             show_info_msg("Purchased Stock", "Purchase Stock updated Successfully")
-
+            ui.IQPB_PushPurchaseEntry.setEnabled(False)
+            
         else:
             show_info_msg("Empty Purchase Data", "Enter the Purchase Data")
+
+    @Exception_Handle
+    def Re_Generate_Table_Entry():
+
+        # print(tbl.currentColumn(),"=============",tbl.currentRow())
+
+        row = tbl.currentRow()
+        col = tbl.currentColumn()
+
+        CB = QComboBox()
+        CB.setEditable(True)
+        
+        CB.addItem("","")
+
+        if ui.IQCB_Language.currentText() == "Tamil":
+            for name,barcode,tamil_name in ProductBarCodeList():
+                CB.addItem(tamil_name + " - " + name ,barcode)
+        else:
+            for name,barcode,tamil_name in ProductBarCodeList():
+                CB.addItem(name,barcode)
+
+        # tbl.setCellWidget(row,1,CB)
+
+        Dynamic_Filter_ComboBox(CB)
+        CB.lineEdit().returnPressed.connect(Update_BarcodeText)
+        CB.currentIndexChanged.connect(Update_ProductData)
+        tbl.setCellWidget(row,1,CB)
+        tbl.setCurrentCell(row, 1)
+
+
+
+
 
     # ---Functions---
     ui.IQDE_Date.setDate(QDate.currentDate())
     tbl.setFocus(True)
     Generate_Table_Entry()
-    Adjust_Table_Width(tbl,[5,50,10,10,10,15,15,18,18])
+    Adjust_Table_Width(tbl,[5,50,10,10,10,15,15,18,18,10])
     tbl.activated.connect(lambda : Generate_Table_Entry())
     tbl.cellChanged.connect(Calculate_Values)
     ui.IQPB_Refresh.clicked.connect(lambda : Clear_Table())
     QShortcut(QKeySequence(Qt.ControlModifier | Qt.Key_Delete),tbl).activated.connect(DeleteTableEntry)
 
+    ui.IQCB_Language.currentIndexChanged.connect(lambda : Re_Generate_Table_Entry())
+
     ui.IQPB_PushPurchaseEntry.clicked.connect(lambda : LoadPurchaseDateSql())
+
+
 
 if __name__ == "__main__":
     Purchase_Master_FN()

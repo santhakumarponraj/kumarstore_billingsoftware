@@ -1,0 +1,73 @@
+
+
+CREATE TABLE `customer_info` (
+  `cid` varchar(10) NOT NULL,
+  `phone_no` varchar(45) DEFAULT NULL,
+  `name` varchar(450) DEFAULT 'DEF',
+  `address` varchar(450) DEFAULT 'DEF',
+  `wholesale` tinyint DEFAULT NULL,
+  PRIMARY KEY (`cid`),
+  UNIQUE KEY `phone_no_UNIQUE` (`phone_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `invoice_item_info` (
+  `UID` int NOT NULL AUTO_INCREMENT,
+  `fy` varchar(20) DEFAULT NULL,
+  `invoice_no` int DEFAULT NULL,
+  `product_id` varchar(45) DEFAULT NULL,
+  `uom` varchar(45) DEFAULT NULL,
+  `qty` float DEFAULT NULL,
+  `rate` float DEFAULT NULL,
+  `gst` float DEFAULT NULL,
+  `i_pnl` float DEFAULT NULL,
+  `purchase_uid` json DEFAULT NULL,
+  `active_status` enum('Y','N') DEFAULT 'Y',
+  PRIMARY KEY (`UID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `invoice_master` (
+  `fy` varchar(45) NOT NULL,
+  `inv_no` int NOT NULL,
+  `gdate` date DEFAULT NULL,
+  `mob_no` varchar(20) DEFAULT NULL,
+  `sales_man` varchar(200) DEFAULT NULL,
+  `pay_mode` varchar(45) DEFAULT NULL,
+  `discount` float DEFAULT NULL,
+  `amt_payabe` float DEFAULT NULL,
+  `amt_received` float DEFAULT NULL,
+  `w_pnl` float DEFAULT NULL,
+  `active_status` enum('Y','N','NP','P') NOT NULL DEFAULT 'Y',
+  PRIMARY KEY (`inv_no`,`fy`,`active_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `product_info` (
+  `product_id` int NOT NULL AUTO_INCREMENT,
+  `barcode` varchar(45) DEFAULT NULL,
+  `product_name` varchar(450) NOT NULL,
+  `tamil_name` varchar(450) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `purchase_price` float NOT NULL DEFAULT '0',
+  `cost_price` float NOT NULL,
+  `mrp` float DEFAULT '0',
+  `wholesale` float NOT NULL,
+  `retail` float NOT NULL,
+  `uom` varchar(5) NOT NULL,
+  `hsn` varchar(45) DEFAULT NULL,
+  `gst` varchar(10) DEFAULT '0',
+  `stock` int DEFAULT '0',
+  `active_status` enum('Y','N','D') DEFAULT 'Y',
+  PRIMARY KEY (`product_id`),
+  UNIQUE KEY `product_name_UNIQUE` (`product_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `purchase_info` (
+  `uid` int NOT NULL AUTO_INCREMENT,
+  `pdate` date NOT NULL,
+  `product_id` int NOT NULL,
+  `purchase_price` float NOT NULL,
+  `cost_price` float NOT NULL,
+  `purchase_qty` float NOT NULL,
+  `mrp` float DEFAULT NULL,
+  `avail_qty` float NOT NULL,
+  `remark` enum('S','NS') NOT NULL DEFAULT 'S',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

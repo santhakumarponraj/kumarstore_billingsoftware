@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1058</width>
-    <height>601</height>
+    <width>1196</width>
+    <height>841</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -218,8 +218,8 @@ QComboBox::down-arrow {
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1054</width>
-         <height>576</height>
+         <width>1192</width>
+         <height>811</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,6,0,0">
@@ -750,120 +750,31 @@ p, li { white-space: pre-wrap; }
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
-           <item row="0" column="0" rowspan="2">
-            <widget class="QWidget" name="widget" native="true">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>1</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout">
-              <property name="leftMargin">
-               <number>0</number>
+           <item row="2" column="1">
+            <widget class="QTableWidget" name="OQTB_Tax">
+             <column>
+              <property name="text">
+               <string>Slab</string>
               </property>
-              <property name="topMargin">
-               <number>0</number>
+             </column>
+             <column>
+              <property name="text">
+               <string> Qty</string>
               </property>
-              <property name="rightMargin">
-               <number>0</number>
+             </column>
+             <column>
+              <property name="text">
+               <string>Amount</string>
               </property>
-              <property name="bottomMargin">
-               <number>0</number>
+             </column>
+             <column>
+              <property name="text">
+               <string>Tax</string>
               </property>
-              <item>
-               <widget class="QLabel" name="label_8">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>1</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Sales Man</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="IQCB_SaleMan">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>A</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>B</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>C</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_19">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>1</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Payment Method</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="IQCB_PayMethod">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>Cash</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>UPI</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Card</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-             </layout>
+             </column>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="IQLE_CostPrice">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>1</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Cost Price :</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2" rowspan="2">
+           <item row="1" column="2" rowspan="2">
             <widget class="QWidget" name="widget_2" native="true">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1031,28 +942,126 @@ p, li { white-space: pre-wrap; }
              <zorder>label_15</zorder>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QTableWidget" name="OQTB_Tax">
-             <column>
-              <property name="text">
-               <string>Slab</string>
+           <item row="1" column="0" rowspan="2">
+            <widget class="QWidget" name="widget" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>1</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout">
+              <property name="leftMargin">
+               <number>0</number>
               </property>
-             </column>
-             <column>
-              <property name="text">
-               <string> Qty</string>
+              <property name="topMargin">
+               <number>0</number>
               </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Amount</string>
+              <property name="rightMargin">
+               <number>0</number>
               </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Tax</string>
+              <property name="bottomMargin">
+               <number>0</number>
               </property>
-             </column>
+              <item>
+               <widget class="QLabel" name="label_8">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>1</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Sales Man</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="IQCB_SaleMan">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>A</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>B</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>C</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_19">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>1</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Payment Method</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="IQCB_PayMethod">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>Cash</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>UPI</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Card</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="3">
+            <widget class="QLabel" name="IQLE_CostPrice">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>1</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>MRP :  --   Purchase Price :    --   Cost Price :  -- </string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
             </widget>
            </item>
           </layout>
@@ -1203,8 +1212,8 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1058</width>
-     <height>21</height>
+     <width>1196</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>

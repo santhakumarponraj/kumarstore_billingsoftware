@@ -38,6 +38,9 @@ def Invoice_Master_FN():
     global purchasepriceDict
     purchasepriceDict = getUIDndPurCost()
 
+    global mrpDict
+    mrpDict = getUIDndMRP()
+
     global CustomerMobNo
     CustomerMobNo = Fetch_CustomerNo()
 
@@ -177,7 +180,7 @@ def Invoice_Master_FN():
     @Exception_Handle
     def Add_Item(index):
         # print("====Add Item===")
-        global costPriceDict, costIndex, purchasepriceDict
+        global costPriceDict, costIndex, purchasepriceDict, mrpDict
 
         data = get_row_values(PrdTbl, index.row())
         row = BilTbl.currentRow()
@@ -208,7 +211,7 @@ def Invoice_Master_FN():
 
         costIndex = data[0]
 
-        ui.IQLE_CostPrice.setText("Purchase Price : "+  str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
+        ui.IQLE_CostPrice.setText(" MRP : "+  str(mrpDict[int(costIndex)]) + " -- " +"Purchase Price : " + str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
 
         BilTbl.setFocus(True)
         BilTbl.setCurrentCell(row, 1)
@@ -220,7 +223,7 @@ def Invoice_Master_FN():
     def BillTbl_functionality(*args):
         # print("bill tbl fn")
         global barcode_status
-        global costPriceDict,purchasepriceDict
+        global costPriceDict,purchasepriceDict,mrpDict
 
         col = BilTbl.currentColumn()
         row = BilTbl.currentRow()
@@ -236,7 +239,7 @@ def Invoice_Master_FN():
                 BilTbl.blockSignals(False)
                 Update_PrdTbl("")
                 costIndex = BilTbl.item(row, 5).text()
-                ui.IQLE_CostPrice.setText(fr"Purchase Price : "+  str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
+                ui.IQLE_CostPrice.setText(fr" MRP : "+  str(mrpDict[int(costIndex)]) + " -- " +"Purchase Price : " + str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
 
                 return
             
@@ -286,7 +289,7 @@ def Invoice_Master_FN():
                     if col == 2:
                         Update_PrdTbl("")  # ✅ KEY FIX: Reset before setCurrentCell so col==0 trigger won't see rowCount==1
                         # ui.IQLE_CostPrice.setText("Cost Price :    ")
-                        ui.IQLE_CostPrice.setText("Purchase Price : "+ " -- " +"Cost Price : " )
+                        ui.IQLE_CostPrice.setText(" MRP : "+ " -- " +"Purchase Price : " + " -- " +"Cost Price : " )
                         # ui.IQLE_CostPrice.setText("Purchase Price : "+  str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
 
                         if BilTbl.rowCount() == row + 1:  # Last row
@@ -321,10 +324,11 @@ def Invoice_Master_FN():
 
             try:
                 costIndex = BilTbl.item(BilTbl.currentRow(), 5).text()
-                ui.IQLE_CostPrice.setText(fr"Purchase Price : "+  str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
+                ui.IQLE_CostPrice.setText(fr" MRP : "+  str(mrpDict[int(costIndex)]) + " -- " +"Purchase Price : " + str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
+            
             except Exception as e:
                 print(e,"cost price error")
-                ui.IQLE_CostPrice.setText("Purchase Price : "+ " -- " +"Cost Price : " )
+                ui.IQLE_CostPrice.setText(" MRP : "+ " -- " +"Purchase Price : " + " -- " +"Cost Price : " )
                 pass
 
         elif col == 0 and not BilTbl.hasFocus() and BilTbl.rowCount() != BilTbl.currentRow() + 1:
@@ -412,7 +416,7 @@ def Invoice_Master_FN():
 
     @Exception_Handle
     def getCpforItem(row):
-        global costPriceDict,purchasepriceDict
+        global costPriceDict,purchasepriceDict,mrpDict
 
         costitem = BilTbl.item(row, 5)
         # costIndex = BilTbl.item(BilTbl.currentRow(), 5).text()
@@ -421,14 +425,16 @@ def Invoice_Master_FN():
             if costIndex not in [None,""]:
                 try:
                     
-                    ui.IQLE_CostPrice.setText("Purchase Price : "+  str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
+                    ui.IQLE_CostPrice.setText(" MRP : "+  str(mrpDict[int(costIndex)]) + " -- " +"Purchase Price : " + str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
                 
                 except Exception as e:
                     
                     costPriceDict = getUIDndCP()
                     purchasepriceDict = getUIDndPurCost()
+                    mrpDict = getUIDndMRP()
 
-                    ui.IQLE_CostPrice.setText("Purchase Price : "+  str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
+
+                    ui.IQLE_CostPrice.setText(" MRP : "+  str(mrpDict[int(costIndex)]) + " -- " +"Purchase Price : " + str(purchasepriceDict[int(costIndex)]) + " -- " +"Cost Price : " + str(costPriceDict[int(costIndex)]))
 
             else:
                 # ui.IQLE_CostPrice.setText( "Cost Price :    ")
@@ -1272,7 +1278,7 @@ def Invoice_Master_FN():
     @Exception_Handle
     def ClearWindow():
         global BillEdit 
-        global costPriceDict,costIndex ,CustomerMobNo,purchasepriceDict
+        global costPriceDict,costIndex ,CustomerMobNo,purchasepriceDict,mrpDict
 
         ui.IQDE_InvDate.setDate(QDate.currentDate())
 
@@ -1313,10 +1319,11 @@ def Invoice_Master_FN():
         BilTbl.setCurrentCell(0,0)
         BilTbl.edit(BilTbl.currentIndex())
         # ui.IQLE_CostPrice.setText("Cost Price :    ")
-        ui.IQLE_CostPrice.setText("Purchase Price : "+ " -- " +"Cost Price : " )
+        ui.IQLE_CostPrice.setText(" MRP : "+ " -- " +"Purchase Price : " + " -- " +"Cost Price : " )
 
         costPriceDict = getUIDndCP()
         purchasepriceDict = getUIDndPurCost()
+        mrpDict = getUIDndMRP()
 
         ui.IQLE_SubTotal.blockSignals(True)
         ui.IQLE_Discount.blockSignals(True)

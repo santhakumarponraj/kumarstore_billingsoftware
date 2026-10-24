@@ -181,7 +181,10 @@ class FocusHighlighter(QObject):
 highlighter = FocusHighlighter()
 
 ProductList = lambda : DB_Fetch("select product_name from product_info where active_status <> 'D' ",False,"LOE")
-ProductBarCodeList = lambda : DB_Fetch("select product_name,barcode from product_info where active_status <> 'D' order by product_name",False,"LOL")
+ProductBarCodeList = lambda : DB_Fetch("select product_name,barcode,tamil_name from product_info where active_status <> 'D' order by product_name",False,"LOL")
+
+ProductBarCodeListwithx = lambda x : DB_Fetch(fr"select product_name,barcode,tamil_name from product_info where active_status <> 'D' and product_name = '{x}' order by product_name",False,"LOL")
+
 
 
 class ColorSqlModel(QSqlQueryModel):
@@ -296,3 +299,7 @@ def getUIDndCP():
 
 def getUIDndPurCost():
     return DB_Fetch("select product_id,purchase_price from product_info",False,"DIC")
+
+def getUIDndMRP():
+    return DB_Fetch("select product_id,mrp from product_info",False,"DIC")
+
